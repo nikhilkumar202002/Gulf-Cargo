@@ -1,0 +1,32 @@
+:root {
+  --primary-color: #262262;
+  --secondary-color: #ED2624;
+}
+.navbar-top{
+    background-color: var(--primary-color);
+    color: white;
+}
+.navbar-container{
+    font-family: "DM Sans";
+}
+.navbar-top-list{
+    font-size: 14px;
+}
+.navbar-top-container{
+    padding: 8px 0;
+}
+.navbar-main{
+    padding: 15px 0;
+    background-color: white;
+}
+.navbar-main-right ul li{
+    font-size: 17px;
+    font-family: "Dm Sans";
+}
+.navbar-main-btn button{
+    background-color: var(--secondary-color);
+    padding: 12px 32px;
+    font-weight: 600 !important;
+    color: white;
+    border-radius: 10px;
+}
