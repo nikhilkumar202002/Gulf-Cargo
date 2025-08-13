@@ -1,0 +1,71 @@
+:root {
+  --primary-color: #262262;
+  --secondary-color: #ED2624;
+}
+.footer-section{
+    background-color: black;
+    padding: 50px 0 0;
+}
+.footer-container{
+    font-family: "Dm Sans";
+    padding-bottom: 20px;
+}
+.footer-tagline{
+    font-size: 16px;
+    font-weight: 500;
+    color: white;
+    padding: 20px 0;
+}
+.footer-social{
+    background-color: var(--secondary-color);
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.footer-menu-heading{
+    font-size: 18px;
+    font-weight: 500;
+    color: white;
+    padding-bottom: 15px;
+}
+.footer-col ul li{
+    color: #B3B3B3;
+    list-style-type: disc;
+    font-size: 16px;
+    padding: 4px;
+    cursor: pointer;
+}
+.footer-col ul{
+    padding-left: 30px;
+}
+.footer-col ul li:hover{
+    color: var(--secondary-color);
+    transition: 4ms;
+}
+.footer-bottom-left p{
+    font-size: 14px;
+    color: #B3B3B3;
+}
+.footer-bottom-right ul li{
+    color: #B3B3B3;
+    font-size: 14px;
+    cursor: pointer;
+}
+.footer-bottom-right ul li:hover{
+    color: var(--secondary-color);
+    transition: 4ms;
+}
+.footer-row-bottom{
+    border-top: 0.5px solid rgb(53, 53, 53);
+    padding-top: 15px;
+    margin-top: 40px;
+}
+@media (max-width: 1080px){
+    .footer-container{
+        padding: 0px 17px 40px 17px !important;
+    }
+}

@@ -30,3 +30,15 @@
     color: white;
     border-radius: 10px;
 }
+.mobile-hamburger button{
+    font-size: 40px;
+}
+
+@media (max-width: 1080px) {
+    .navbar-top{
+        display: none;
+    }
+    .navbar-top-container, .navbar-main-container{
+        padding: 15px 17px !important;
+    }
+}
