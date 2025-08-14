@@ -1,0 +1,74 @@
+:root {
+  --primary-color: #262262;
+  --secondary-color: #ED2624;
+}
+.hero-container{
+    border-radius: 20px !important; 
+    overflow: hidden !important;
+    height: 650px;
+    width: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    font-family: "Dm Sans";
+}
+.hero-container::before {
+   content: "";
+   position: absolute;
+   inset: 0;
+   background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0));
+   z-index: 1;
+   pointer-events: none;
+}
+.hero-content,.hero-tracking-form{
+     position: relative; /* Needed for z-index to apply */
+  z-index: 4;
+}
+.hero-content-heading{
+    font-size: 48px;
+    font-weight: 700;
+    color: white;
+}
+.hero-content-description{
+    font-size: 16px;
+    color: #E7E7E7;
+    font-weight: 400;
+    font-family: "Montserrat";
+    line-height: 22px;
+}
+.hero-content-btns{
+    padding-top: 40px;
+}
+.hero-content-btns button{
+    background-color: var(--secondary-color);
+    padding: 10px 32px;
+    font-size: 17px;
+    font-weight: 500;
+    border-radius: 10px;
+    color: white;
+}
+.hero-content-btns button:hover{
+    background-color: var(--primary-color);
+    color: white;
+    transition: 4ms;
+}
+.hero-content-btn-2{
+    background-color: transparent !important;
+    border: 1px solid white !important;
+    
+}
+.hero-content-btn-2:hover{
+    background-color: var(--primary-color) !important;
+    transform: 4ms;
+    border: 1px solid var(--primary-color) !important;
+}
+.hero-content-flex {
+  display: flex;
+  gap: 5rem; 
+  flex-wrap: wrap; 
+}
+.hero-content,
+.hero-tracking-form {
+  flex: 1 1 0; 
+  min-width: 300px; 
+}

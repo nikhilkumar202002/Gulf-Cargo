@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "@radix-ui/themes/styles.css";
 @import "@fontsource/dm-sans";
+@import "@fontsource/montserrat";
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -15,8 +17,13 @@
   --font-mono: var(--font-geist-mono);
 }
 
-.container {
-    @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+.container { 
+  @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8; 
+  padding-inline: 0px !important; 
+}
+
+.container-small {
+    @apply mx-auto max-w-6xl px-4 sm:px-6 lg:px-8;
     padding-inline: 0px !important;
 }
 
