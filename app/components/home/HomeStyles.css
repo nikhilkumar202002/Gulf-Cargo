@@ -72,3 +72,119 @@
   flex: 1 1 0; 
   min-width: 300px; 
 }
+
+
+/* hero second */
+
+.hero-second-content{
+    font-family: "Dm Sans";
+    h1{
+        font-size: 14px;
+        font-weight: 600;
+        color: #1e1e1e;
+    }
+    p{
+        font-size: 12px;
+        font-weight: 500;
+        color: #414141;
+        font-family: "Montserrat";
+    }
+}
+.hero-second-icon{
+    font-size: 35px;
+    color: var(--primary-color);
+}
+.hero-second{
+    padding: 30px 0px;
+}
+
+/* our services */
+
+.our-service-header{
+    font-family: "Dm Sans";
+    text-align: center;
+    padding-bottom: 40px;
+    h1{
+        font-size: 30px;
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+    p{
+        font-size: 16px;
+        font-weight: 500;
+        color: #565656;
+        font-family: "Montserrat";
+    }
+}
+.our-service{
+    padding: 70px 0px 100px;
+}
+.our-service-card-header{
+    font-family: "Dm Sans";
+    span{
+        background-color: var(--secondary-color);
+        border-radius: 10px;
+        width: 58px;
+        height: 58px;
+        font-size: 32px;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    h1{
+        font-size: 20px;
+        font-weight: 600;
+        color: #1e1e1e;
+    }
+}
+.our-service-card-descrption p{
+    font-family: "Montserrat";
+    font-size: 16px;
+    font-weight: 500;
+    color: #787878;
+    line-height: 21px;
+    padding: 10px 0px 30px;
+}
+.our-service-card-btn button{
+    padding: 10px 20px;
+    background-color: var(--primary-color);
+    border-radius: 7px;
+    color: white;
+    font-family: "Dm Sans";
+}
+.our-service-card{
+    padding: 40px;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    border-radius: 20px;
+}
+@media (max-width:1024px) {
+    .hero-container{
+        width: 100%;
+        padding: 30px 20px !important;
+        height: 100vh;
+    }
+    .hero{
+        padding: 0px 17px;
+    }
+    .hero-content-heading{
+        font-size: 35px;
+    }
+    .hero-second{
+        padding: 30px 17px;
+    }
+    .our-service{
+        padding: 30px 17px 50px 17px;
+    }
+    .our-service-header{
+        text-align: left;
+        h1{
+            font-size: 25px;
+            line-height: 30px;
+        }
+    }
+    .our-service-card{
+        padding: 22px;
+    }
+    
+}

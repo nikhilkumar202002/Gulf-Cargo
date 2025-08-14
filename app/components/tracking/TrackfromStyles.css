@@ -118,3 +118,17 @@
   color: white;
   margin-top: 10px;
 }
+
+@media (max-width:1024px) {
+  .tracking-tabs{
+        gap: 0px !important;
+        padding: 4px;
+        font-size: 11px !important;
+    }
+    .tracking-form-box{
+      padding: 18px;
+    }
+    .tracking-shipping-tabs{
+      gap: 10px !important;
+    }
+}

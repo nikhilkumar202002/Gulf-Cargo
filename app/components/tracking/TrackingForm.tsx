@@ -159,11 +159,22 @@ export default function TrackingForm() {
                 </div>
                 <div className="flex items-center gap-5">
                   <BsPinMap/>
-                  <input
-                    type="text"
-                    placeholder="Select delivery country"
-                    className="flex-1 bg-gray-100 rounded-xl px-5 py-3 text-gray-600 outline-none"
-                  />
+                   <select
+                        className="flex-1 bg-gray-100 rounded-xl px-5 py-3 text-gray-600 outline-none"
+                        defaultValue=""
+                      >
+                        <option value="" disabled>Select delivery country</option>
+                        <option value="India">India</option>
+                        <option value="Sree Lanka">Sree Lanka</option>
+                        <option value="Pakistan">Pakistan</option>
+                        <option value="Philippines">Philippines</option>
+                        <option value="Indonesia">Indonesia</option>
+                        <option value="Brune">Brune</option>
+                        <option value="Malaysia">Malaysia</option>
+                        <option value="Nepal">Nepal</option>
+                        <option value="Bangladesh">Bangladesh</option>
+                        <option value="United Kingdom">United Kingdom</option>
+                      </select>
                 </div>
                 <button className="ship-order-btn w-full py-3 rounded-xl">
                   Get OTP & Ship Now

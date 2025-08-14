@@ -8,7 +8,7 @@ const hero = () => {
     <>
         <section className='hero'>
             <div className="hero-container container relative bg-[url('/Banners/banner-1.png')] bg-cover bg-center bg-no-repeat">
-                <div className="hero-content-flex container-small">
+                <div className="hero-content-flex container-small flex items-center">
                     <div className="hero-content">
                         <h1 className='hero-content-heading'>GULF CARGO LLC</h1>
                         <p className='hero-content-description'>Provides full service of Air/Sea/Land - Import & Export Customs Clearance, International Freight Forwarding and all types of Cargo Packing based on our long field experience. We globally support all logistics requirements.</p>
