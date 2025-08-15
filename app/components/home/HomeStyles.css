@@ -158,6 +158,254 @@
     box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
     border-radius: 20px;
 }
+
+/* about us */
+.about-section{
+    padding: 0px 0px 100px;
+}
+
+.about-content-counter {
+  flex: 1 1 200px; /* Each counter grows/shrinks, min 200px */
+  max-width: 220px; /* Optional: controls how wide they can be */
+  padding: 15px;
+  border: 1px solid #d7d7d7;
+  border-radius: 20px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.about-video video {
+  width: 100%;
+  height: 600px;
+  object-fit: cover !important;
+  border-radius: 20px;
+}
+.about-content-heading{
+    font-size: 30px;
+    color: var(--primary-color);
+    font-weight: 600;
+    font-family: "Dm Sans";
+}
+.about-content-description{
+    font-size: 16px;
+    font-family: "Montserrat";
+    color: #565656;
+    padding-top: 15px 0px;
+}
+.about-counter-number{
+    font-size: 25px;
+    font-weight: 600;
+    font-family: "Dm Sans";
+    color: #1e1e1e;
+}
+.about-counter-heading{
+    font-size: 16px;
+    font-family: "Montserrat";
+    font-weight: 500;
+    color: #565656;
+}
+.about-cta button{
+    padding: 12px 32px;
+    background-color: var(--secondary-color);
+    border-radius: 10px;
+    font-family: "Dm Sans";
+    font-size: 16px;
+    color: white;
+    font-weight: 600;
+    margin-top: 40px;
+}
+
+/* Testimonial Styles */
+
+.testimonial-header{
+    font-family: "Dm Sans";
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.testimonial-heading{
+    font-size: 30px;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+.testimonial-description{
+    font-size: 16px;
+    font-family: "Montserrat";
+    width: 40%;
+    color: #5a5a5a;
+    line-height: 22px;
+    padding-top: 10px;
+}
+
+/* testimonial cards */
+
+.testimonial-card{
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.testimonial-collon{
+    font-size: 50px;
+    color: #cfcfcf;
+}
+.testimonial-content p{
+    font-size: 17px;
+    font-family: "Montserrat";
+    color: #1e1e1e;
+    font-weight: 500;
+}
+.testimonial-avatar{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-top: 15px;
+    img{
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+}
+.testimonial-client{
+    font-size: 15px;
+    font-family: "Dm Sans";
+    padding-top: 10px;
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+/* cta section */
+
+.cta-section{
+    position: relative;
+  background-image: url("../../../public/Banners/cta-banner.jpg");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed; /* makes the image fixed */
+  text-align: center;
+  width: 100%;
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+.cta-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(45deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0));
+  z-index: -1;
+}
+.cta-content{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.cta-heading{
+    font-size: 45px;
+    font-family: "Dm Sans";
+    font-weight: 600;
+    color: white;
+}
+.cta-description{
+    font-family: "Montserrat";
+    font-size: 17px;
+    color: white;
+    font-weight: 500;
+    width: 50%;
+}
+.cta-content button{
+    background-color: var(--secondary-color);
+    padding: 12px 32px;
+    color: white;
+    font-size: 16px;
+    border-radius: 10px;
+    font-weight: 500;
+    font-family: "Dm Sans";
+    margin-top: 30px;
+}
+
+/* contact us section */
+
+.contact-section{
+    padding: 100px 0px;
+}
+.contact-heading{
+    font-size: 45px;
+    font-family: "Dm Sans";
+    font-weight: 600;
+    color: #1e1e1e;
+}
+.contact-hightlight{
+    color: var(--primary-color);
+}
+.contact-description{
+    font-size: 17px;
+    font-family: "Montserrat";
+    font-weight: 500;
+    color: #3c3c3c;
+}
+.contact-icons{
+    background-color: var(--secondary-color);
+    width: 44px;
+    height: 44px;
+    border-radius: 60px;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+}
+.contact-lists{
+    font-size: 17px;
+    font-weight: 600;
+    font-family: "Montserrat";
+}
+.contact-icon-list{
+    padding-top: 30px;
+}
+.contact-form-row label{
+    font-family: "Dm Sans";
+    font-size: 13px;
+    font-weight: 500;
+    padding-left: 10px;
+}
+.contact-form-row input,.contact-form-row textarea{
+    padding: 12px 20px;
+    background-color: #F2F2F2;
+    border-radius: 10px;
+    width: 100%;
+}
+
+.contact-form{
+    padding: 50px;
+    border-radius: 20px;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+.contact-form-row button{
+    padding: 12px 32px;
+    background-color: var(--secondary-color);
+    border-radius: 10px;
+    color: white;
+    font-family: "Dm Sans";
+    font-weight: 500;
+    width: 100%;
+    margin-top: 30px;
+}
+.margin-top{
+    margin-top: 10px;
+}
 @media (max-width:1024px) {
     .hero-container{
         width: 100%;
@@ -186,5 +434,35 @@
     .our-service-card{
         padding: 22px;
     }
-    
+    .about-section{
+        padding: 50px 17px 50px 17px;
+    }
+    .about-video video {
+  width: 100%;
+  height: 300px;
+    }
+    .about-row{
+        row-gap: 30px !important;
+    }
+    .testimonial-description{
+        width: 100%;
+    }
+    .testimonial-header{
+        padding: 0px 17px;
+    }
+    .cta-heading{
+        font-size: 30px;
+    }
+    .cta-description{
+        width: 100%;
+    }
+    .cta-section{
+        padding: 0px 17px;
+    }
+    .contact-section{
+        padding: 80px 17px;
+    }
+    .contact-form{
+        padding: 30px;
+    }
 }
