@@ -165,8 +165,8 @@
 }
 
 .about-content-counter {
-  flex: 1 1 200px; /* Each counter grows/shrinks, min 200px */
-  max-width: 220px; /* Optional: controls how wide they can be */
+  flex: 1 1 200px; 
+  max-width: 220px;
   padding: 15px;
   border: 1px solid #d7d7d7;
   border-radius: 20px;

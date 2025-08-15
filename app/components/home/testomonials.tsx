@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import styles from './TestimonialCarousel.module.css';
 
-const testomonials = () => {
+const Testomonials = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
       const [isMobile, setIsMobile] = useState(false);
 
@@ -61,22 +61,24 @@ const testomonials = () => {
     return () => window.removeEventListener('resize', checkIsMobile);
   }, []);
 
-  // Calculate cards per slide and total slides based on screen size
+  
   const cardsPerSlide = isMobile ? 1 : 3;
   const totalSlides = Math.ceil(testimonials.length / cardsPerSlide);
 
-  // Auto-play functionality
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % totalSlides);
-    }, 5000);
+ 
+ // Auto-play functionality
+useEffect(() => {
+  const interval = setInterval(() => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % totalSlides);
+  }, 5000);
 
-    return () => clearInterval(interval);
-  }, [totalSlides]);
+  return () => clearInterval(interval);
+}, [totalSlides]);
 
-  const handleDotClick = (index) => {
-    setCurrentIndex(index);
-  };
+const handleDotClick = (index: number) => {
+  setCurrentIndex(index);
+};
+
 
   return (
     <>
@@ -142,4 +144,4 @@ const testomonials = () => {
   )
 }
 
-export default testomonials
+export default Testomonials

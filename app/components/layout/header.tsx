@@ -13,7 +13,7 @@ import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import Link from 'next/link'
 
-const header = () => {
+const Header = () => {
 
     const pathname = usePathname()
     const [isOpen, setIsOpen] = useState(false)
@@ -116,4 +116,4 @@ const header = () => {
     )
 }
 
-export default header
+export default Header

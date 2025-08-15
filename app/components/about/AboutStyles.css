@@ -1,0 +1,132 @@
+:root {
+  --primary-color: #262262;
+  --secondary-color: #ED2624;
+}
+.about-container{
+    border-radius: 20px !important; 
+    overflow: hidden !important;
+    height: 500px !important;
+    width: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    font-family: "Dm Sans";
+}
+.about-container::before {
+   content: "";
+   position: absolute;
+   inset: 0;
+   background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0));
+   z-index: 1;
+   pointer-events: none;
+}
+.about-content-container{
+     position: relative; /* Needed for z-index to apply */
+  z-index: 4;
+}
+.about-content-heading{
+    font-size: 48px;
+    font-family: "Dm Sans";
+    font-weight: 600;
+    color: white;
+    width: 50%;
+    line-height: 56px;
+}
+.about-content-description{
+    font-size: 14px;
+    font-family: "Montserrat";
+    font-weight: 500;
+    color: rgb(230, 230, 230);
+    line-height: 20px;
+    width: 50%;
+}
+.about-content-breadcrumbs{
+    padding-top: 20px;
+}
+.about-content-left-heading,.coperative-loactions-heading{
+    font-size: 30px;
+    font-weight: 600;
+    font-family: "Dm Sans";
+}
+.about-content-left-heading-hightlight,.coperative-loactions-highlight{
+    color: var(--secondary-color) !important;
+}
+.about-content-left-description{
+    font-family: "Montserrat";
+    font-size: 16px;
+    font-weight: 550;
+    color: #1e1e1e;
+}
+.about-content-background{
+    width: 100%;
+    height: 500px;
+    background-color: var(--primary-color);
+    border-radius: 20px;
+}
+.about-content-image{
+    width: 100%;
+    img{
+        width: 100%;
+        height: 500px;
+        border-radius: 20px;
+        object-fit: cover;
+    }
+}
+.about-content,.coperative-locations{
+    padding: 100px 0px;
+}
+
+/* mission vision */
+
+.mission-vision{
+    padding: 100px 0px;
+    background-color: black;
+}
+.mission-heading,.vision-heading{
+    font-size: 30px;
+    font-family: "Dm Sans";
+    font-weight: 600;
+    color: white;
+}
+.mission-description,.vision-description{
+    font-size: 16px;
+    font-weight: 500px;
+    font-family: "Montserrat";
+    color: rgb(238, 238, 238);
+}
+.vision-container{
+    padding-top: 40px;
+}
+.coperative-locations-header{
+    padding-bottom: 30px;
+}
+
+@media (max-width:1080px) {
+    .coperative-locations,.about-content,.mission-vision{
+        padding: 80px 17px;
+    }
+    .about-content-heading, .about-content-description{
+        width: 100%;
+    }
+    .about-content-heading{
+        font-size: 28px;
+        line-height: 36px;
+    }
+    .about-content-description{
+        display: none;
+    }
+    .about-banner{
+        padding: 0px 17px;
+    }
+    .about-container{
+        padding: 30px 30px !important;
+        height: 350px !important;
+        display: flex;
+        flex-direction: column;
+        justify-content: end;
+        
+    }
+    .about-content-image img{
+        height: 350px;
+    }
+}

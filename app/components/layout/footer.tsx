@@ -3,7 +3,7 @@ import React from 'react'
 import { FaInstagram, FaFacebook, FaLinkedinIn } from "react-icons/fa";
 import "./Footer.css";
 
-const footer = () => {
+const Footer = () => {
   return (
     <>
       <footer>
@@ -73,4 +73,4 @@ const footer = () => {
   )
 }
 
-export default footer
+export default Footer

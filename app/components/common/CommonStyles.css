@@ -1,0 +1,22 @@
+:root {
+  --primary-color: #262262;
+  --secondary-color: #ED2624;
+}
+.contact-grid-heading{
+    font-size: 20px;
+    font-family: "Dm Sans";
+}
+.contact-grid-number{
+    font-size: 16px;
+    font-family: "Montserrat";
+    font-weight: 500;
+    color: rgb(38, 38, 38);
+    padding-left: 25px;
+    cursor: pointer;
+}
+.contact-grid-number:hover{
+    color: var(--secondary-color);
+    transition: 400ms;
+    font-weight: 550;
+    text-decoration: none !important;
+}
