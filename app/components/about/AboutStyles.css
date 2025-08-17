@@ -2,7 +2,7 @@
   --primary-color: #262262;
   --secondary-color: #ED2624;
 }
-.about-container{
+.about-page-container{
     border-radius: 20px !important; 
     overflow: hidden !important;
     height: 500px !important;
@@ -12,7 +12,7 @@
     align-items: center;
     font-family: "Dm Sans";
 }
-.about-container::before {
+.about-page-container::before {
    content: "";
    position: absolute;
    inset: 0;
@@ -24,15 +24,15 @@
      position: relative; /* Needed for z-index to apply */
   z-index: 4;
 }
-.about-content-heading{
-    font-size: 48px;
+.about-content-page-heading{
+    font-size: 48px !important;
     font-family: "Dm Sans";
     font-weight: 600;
-    color: white;
+    color: white !important;
     width: 50%;
     line-height: 56px;
 }
-.about-content-description{
+.about-content-page-description{
     font-size: 14px;
     font-family: "Montserrat";
     font-weight: 500;
@@ -105,20 +105,20 @@
     .coperative-locations,.about-content,.mission-vision{
         padding: 80px 17px;
     }
-    .about-content-heading, .about-content-description{
+    .about-content-page-heading, .about-content-page-description{
         width: 100%;
     }
-    .about-content-heading{
-        font-size: 28px;
+    .about-content-page-heading{
+        font-size: 28px !important;
         line-height: 36px;
     }
-    .about-content-description{
+    .about-content-page-description{
         display: none;
     }
     .about-banner{
         padding: 0px 17px;
     }
-    .about-container{
+    .about-page-container{
         padding: 30px 30px !important;
         height: 350px !important;
         display: flex;
