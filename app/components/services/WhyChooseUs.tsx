@@ -54,8 +54,8 @@ const WhyChooseUs = () => {
                         <div className="whychooseus-points">
                             <div className="whychoooseus-point">
                                 <h4 className="whychoooseus-point-heading">Here’s why our clients choose us:</h4>
-                                    {whyChooseUs.map((point, index) => (
-                                <div className="whychoooseus-point-list flex gap-3 p-2">
+                                    {whyChooseUs.map((point,index) => (
+                                <div className="whychoooseus-point-list flex gap-3 p-2" key={index}>
                                     <div className="whychoooseus-point-list-icon">
                                         <FaSquareCheck/>
                                     </div>

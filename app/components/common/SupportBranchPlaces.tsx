@@ -27,10 +27,10 @@ export default function ContactGrid() {
           className="border border-dashed border-gray-300 rounded-xl p-4 contact-grid-box"
         >
           <div className="flex items-center gap-2 mb-2">
-            <PiDiamondFill className="text-[#262262]" />
-            <h3 className="font-bold text-gray-900 contact-grid-heading">{contact.title}</h3>
+            <PiDiamondFill className="text-[white]" />
+            <h3 className="font-bold text-white contact-grid-heading">{contact.title}</h3>
           </div>
-          <div className="text-sm text-gray-700 space-y-1 contact-grid-number">
+          <div className="text-sm text-white space-y-1 support-branch-numbers">
             {contact.phones.map((phone, i) => (
               <p key={i}>
                 <a

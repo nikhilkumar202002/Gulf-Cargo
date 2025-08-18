@@ -33,6 +33,13 @@
 .mobile-hamburger button{
     font-size: 40px;
 }
+.navbar-main-btn button:hover{
+    background-color: var(--primary-color);
+    transition: 400ms;
+}
+.navbar-main-btn button:active{
+    background-color: var(--primary-color);
+}
 
 @media (max-width: 1080px) {
     .navbar-top{

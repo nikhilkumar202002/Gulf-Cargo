@@ -72,9 +72,11 @@ const Header = () => {
                                     ))}
 
                                     <li className="navbar-main-btn">
-                                        <button className="flex items-center gap-1 bg-[#262262] text-white py-2 px-4 rounded">
+                                        <Link href="/support">
+                                        <button className="navbar-btn flex items-center gap-1 text-white py-2 px-4 rounded">
                                             Contact <MdArrowForward />
                                         </button>
+                                        </Link>
                                     </li>
                                 </ul>
                             </div>
@@ -102,9 +104,11 @@ const Header = () => {
                                         </li>
                                     ))}
                                     <li>
-                                        <button className="flex items-center gap-1 bg-[#262262] text-white w-full py-2 px-4 rounded">
+                                        <Link href="/support">
+                                        <button className="flex items-center gap-1 bg-[#262262] text-white py-2 px-4 rounded">
                                             Contact <MdArrowForward />
                                         </button>
+                                        </Link>
                                     </li>
                                 </ul>
                             </div>

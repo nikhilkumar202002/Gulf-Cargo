@@ -346,6 +346,8 @@
     font-family: "Dm Sans";
     font-weight: 600;
     color: #1e1e1e;
+    line-height: 50px;
+    padding-bottom: 10px;
 }
 .contact-hightlight{
     color: var(--primary-color);
@@ -451,7 +453,7 @@
         padding: 0px 17px;
     }
     .cta-heading{
-        font-size: 30px;
+        font-size: 25px !important;
     }
     .cta-description{
         width: 100%;
@@ -465,4 +467,5 @@
     .contact-form{
         padding: 30px;
     }
+    
 }

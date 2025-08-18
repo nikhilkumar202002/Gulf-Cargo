@@ -1,0 +1,168 @@
+:root {
+  --primary-color: #262262;
+  --secondary-color: #ED2624;
+}
+.support-page-container{
+    border-radius: 20px !important; 
+    overflow: hidden !important;
+    height: 500px !important;
+    width: 100%;
+    position: relative;
+    display: flex;
+    align-items: end;
+    font-family: "Dm Sans";
+    padding-bottom: 50px;
+}
+.support-page-container::before{
+   content: "";
+   position: absolute;
+   inset: 0;
+   background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0));
+   z-index: 1;
+   pointer-events: none;
+}
+.support-content-container{
+    position: relative;
+    z-index: 4;
+}
+.support-content-page-heading{
+    font-size: 45px;
+    color: white;
+    font-weight: 600;
+    width:50%;
+    line-height: 53px;
+}
+.support-content-page-description{
+    font-size: 16px;
+    color: rgb(227, 227, 227);
+    font-family: "Montserrat";
+    padding: 10px 0px 30px;
+    width: 60%;
+}
+
+/* support map styles */
+
+.support-map-heading{
+    font-size: 30px;
+    font-family: "Dm Sans";
+    font-weight: 600;
+    color: #1e1e1e;
+    padding-bottom: 30px;
+}
+.support-map-heading-highlight{
+    color: var(--secondary-color);
+}
+.support-map-section{
+    padding: 100px 0;
+}
+.support-map-headoffice-heading{
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--primary-color);
+    font-family: "Dm Sans";
+}
+.support-map-headoffice-subheading{
+    font-size: 18px;
+    font-weight: 600;
+    color: #1e1e1e;
+    font-family: "Dm Sans";
+    padding: 10px 0px 4px;
+}
+.support-map-headoffice-description{
+    font-size: 16px;
+    font-weight: 550;
+    font-family: "Montserrat";
+    color: #5C5C5C;
+    padding-bottom: 20px;
+}
+.support-map-list-icon{
+    background-color: var(--secondary-color) !important;
+    width: 45px !important;
+    height: 45px !important;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 22px;
+    color: white;
+}
+.support-map-list h1{
+    font-size: 16px;
+    font-weight: 600;
+    font-family: "Montserrat";
+    color: #1e1e1e;
+}
+.padding{
+    padding: 10px 0px;
+}
+.support-map-contact{
+    padding: 40px;
+    border-radius: 20px;
+}
+.support-map-contact-display{
+    width: 100%;
+}
+.support-map-contact-display iframe{
+    border-radius: 20px;
+    width: 100%;
+    height: 380px;
+}
+.support-map-contact{
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    justify-content: center !important;
+}
+
+/* branches contact details */
+
+.support-branch{
+    background-color: #111111;
+    padding: 80px 0px;
+}
+.support-branch-heading{
+    font-size: 30px;
+    color: white;
+    font-family: "Dm Sans";
+    font-weight: 600;
+    padding-bottom: 40px;
+}
+.support-branch-heading-highlight{
+    color: var(--secondary-color);
+}
+.list-icons{
+    background-color: var(--secondary-color);
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+@media (max-width:1024px) {
+    .support-content-page-heading{
+        width: 100%;
+        font-size: 35px;
+        line-height: 45px;
+    }
+    .support-content-container{
+        padding: 0px 30px !important;
+    }
+    .support-content-page-description{
+        display: none;
+    }
+    .support-page-container{
+        height: 350px !important;
+    }
+    .support-page-banner{
+        padding: 0px 17px;
+    }
+    .support-map-section,.support-branch{
+        padding: 60px 17px;
+    }
+    .support-map-contact{
+        padding: 25px;
+    }
+}

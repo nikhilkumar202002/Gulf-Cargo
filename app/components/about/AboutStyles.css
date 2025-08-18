@@ -9,8 +9,9 @@
     width: 100%;
     position: relative;
     display: flex;
-    align-items: center;
+    align-items: end;
     font-family: "Dm Sans";
+    padding-bottom: 50px;
 }
 .about-page-container::before {
    content: "";
@@ -21,11 +22,11 @@
    pointer-events: none;
 }
 .about-content-container{
-     position: relative; /* Needed for z-index to apply */
-  z-index: 4;
+    position: relative; /* Needed for z-index to apply */
+    z-index: 4;
 }
 .about-content-page-heading{
-    font-size: 48px !important;
+    font-size: 45px !important;
     font-family: "Dm Sans";
     font-weight: 600;
     color: white !important;

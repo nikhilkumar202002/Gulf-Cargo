@@ -11,7 +11,8 @@
     width: 100%;
     position: relative;
     display: flex;
-    align-items: center;
+    align-items: end;
+    padding-bottom: 50px;
     font-family: "Dm Sans";
 }
 .service-page-main-container::before{
@@ -27,7 +28,7 @@
   z-index: 4;
 }
 .service-banner-content-heading{
-    font-size: 48px !important;
+    font-size: 45px !important;
     font-family: "Dm Sans";
     font-weight: 600;
     color: white !important;
