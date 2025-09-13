@@ -43,7 +43,7 @@ const WhyChooseUs = () => {
                 <div className="whychooseus-flex grid grid-cols-1 lg:grid-cols-2 gap-15 lg:gap-12 xl:gap-16">
                     <div className="whychooseus-image relative">
                         <div className="sticky top-24">
-                        <Image src="./Images/whychooseus.jpg" width={1200} height={0} alt='Why Choose Us'/>
+                        <Image src="./Images/whychooseus.jpg" width={1200} height={0} alt='Why Choose Us' priority />
                         </div>
                     </div>
 

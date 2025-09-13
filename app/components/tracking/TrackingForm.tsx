@@ -150,7 +150,7 @@ export default function TrackingForm() {
               {/* International Form */}
               <Tabs.Content value="international" className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <Image src="/Icons/uae-flag.png" width={25} height={25} alt='UAE'/>
+                  <Image src="/Icons/uae-flag.png" width={25} height={25} alt='UAE' priority />
                   <input
                     type="text"
                     placeholder="Enter pickup pin code"

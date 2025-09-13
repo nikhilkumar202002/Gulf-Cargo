@@ -12,7 +12,7 @@ const Footer = () => {
             <div className="footer-row grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               <div className="footer-col">
                 <div className="footer-item">
-                    <Image src="/Logo-white.png" width={120} height={40} alt='Gulf Cargo'/>
+                    <Image src="/Logo-white.png" width={120} height={40} alt='Gulf Cargo' priority/>
                     <p className='footer-tagline'>Delivering Trust, One Shipment at a Time.</p>
 
                     <div className="footer-socials flex items-center gap-2">

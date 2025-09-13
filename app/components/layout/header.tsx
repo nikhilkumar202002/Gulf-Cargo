@@ -24,7 +24,7 @@ const Header = () => {
         { name: 'Company', href: '/company' },
         { name: 'Services', href: '/services' },
         { name: 'Blog', href: '/blog' },
-        { name: 'Track your order', href: '/track' },
+        { name: 'Track your order', href: '/trackorder' },
     ]
 
 
@@ -55,7 +55,7 @@ const Header = () => {
 
                             {/* Logo */}
                             <div className="navbar-main-left">
-                                <Image src="/Logo.png" width={120} height={40} alt='Gulf Cargo' />
+                                <Image src="/Logo.png" width={120} height={40} alt='Gulf Cargo' priority/>
                             </div>
 
                             {/* Desktop Menu */}

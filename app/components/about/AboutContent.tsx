@@ -21,7 +21,7 @@ const AboutContent = () => {
                     <div className="about-content-col flex justify-center lg:justify-end">
                         <div className="about-content-images">
                             <div className="about-content-image ">
-                                <Image src="./Images/about-content-photo.jpg" alt='About Gulf Cargo' width={1200} height={0}/>
+                                <Image src="./Images/about-content-photo.jpg" alt='About Gulf Cargo' width={1200} height={0} priority/>
                             </div>     
                         </div>
                     </div>
