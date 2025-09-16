@@ -5,7 +5,7 @@ const services = [
     highlight: "Sea Freight",
     title: "Services",
     subtitle: "Reliable Ocean Transportation for Global Trade",
-    image: "/Images/Sea-Freight-Services.jpg",
+    image: "/Images/Sea-Freight-Services.webp",
     list: [
       "Full Container Load (FCL) - Complete container solutions for large shipments",
       "Less than Container Load (LCL) - Cost-effective consolidation services",
@@ -22,7 +22,7 @@ const services = [
     highlight: "Air Freight",
     title: "Solutions",
     subtitle: "Express Air Cargo for Time-Critical Shipments",
-    image: "/Images/Air-Freight-Solutions.jpg",
+    image: "/Images/Air-Freight-Solutions.webp",
     list: [
       "Express Air Services - Next-day and 48-hour delivery options",
       "Standard Air Freight - Economical air transport solutions",
@@ -39,7 +39,7 @@ const services = [
     highlight: "Land",
     title: "Transportation",
     subtitle: "Comprehensive Road Transport Across the Gulf",
-    image: "/Images/Land-Transportation.jpg",
+    image: "/Images/Land-Transportation.webp",
     list: [
       "Full Truck Load (FTL) - Dedicated vehicle transport",
       "Less than Truck Load (LTL) - Shared transport for smaller shipments",
@@ -56,7 +56,7 @@ const services = [
     highlight: "Warehousing &",
     title: "Distribution",
     subtitle: "Strategic Storage and Fulfillment Solutions",
-    image: "/Images/Warehousing-&-Distribution.jpg",
+    image: "/Images/Warehousing-&-Distribution.webp",
     list: [
       "Public Warehousing - Flexible storage options",
       "Dedicated Warehousing - Exclusive facility management",
@@ -73,7 +73,7 @@ const services = [
     highlight: "Customs",
     title: "Clearance & Documentation",
     subtitle: "Expert Customs Brokerage Services",
-    image: "/Images/Customs-Clearance-&-Documentation.jpg",
+    image: "/Images/Customs-Clearance-&-Documentation.webp",
     list: [
       "Import/Export Clearance - Complete customs processing",
       "Documentation Services - Bills of lading, certificates, permits",
@@ -90,7 +90,7 @@ const services = [
     highlight: "Project Logistics",
     title: "Solutions",
     subtitle: "Specialized Solutions for Complex Projects",
-    image: "/Images/Project-Logistics-Solutions.jpg",
+    image: "/Images/Project-Logistics-Solutions.webp",
     list: [
       "Project Cargo Management - End-to-end project handling",
       "Heavy Lift Operations - Cranes, equipment, and specialized transport",
@@ -107,7 +107,7 @@ const services = [
     highlight: "Supply Chain",
     title: "Consulting",
     subtitle: "Strategic Logistics Optimization",
-    image: "/Images/Supply-Chain-Consulting.jpg",
+    image: "/Images/Supply-Chain-Consulting.webp",
     list: [
       "Supply Chain Analysis - Cost and efficiency optimization",
       "Route Optimization - Most efficient transport corridors",

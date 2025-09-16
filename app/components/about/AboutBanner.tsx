@@ -6,7 +6,7 @@ const AboutBanner = () => {
   return (
     <>
         <section className="about-banner">
-            <div className="about-page-container container relative bg-[url('/Banners/about-banner.jpg')] bg-cover bg-center bg-no-repeat">
+            <div className="about-page-container container relative bg-[url('/Banners/about-banner.webp')] bg-cover bg-center bg-no-repeat">
                 <div className="about-content-container container-small">
                     <h1 className='about-content-page-heading'>Delivering Trust, One Parcel at a Time</h1>
                     <p className='about-content-page-description'>We are committed to making every delivery fast, secure, and hassle-free. With our reliable logistics network and customer-first approach, we ensure your shipments reach their destination safely and on time. From real-time tracking to dedicated support, we go the extra mile to keep you connected to what matters most.</p>

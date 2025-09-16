@@ -14,37 +14,37 @@ const Testomonials = () => {
     {
       id: 1,
       content: "Gulf Cargo has been our go-to logistics partner for years. Their team is professional, responsive, and always delivers on time.",
-      avatar: "/Images/avatar-1.jpg",
+      avatar: "/Images/avatar-1.webp",
       client: "Mohammed A., Dubai"
     },
     {
       id: 2,
       content: "Exceptional service quality and reliability. Gulf Cargo handles our shipments with utmost care and precision.",
-      avatar: "/Images/avatar-2.jpg",
+      avatar: "/Images/avatar-2.webp",
       client: "Sarah K., Abu Dhabi"
     },
     {
       id: 3,
       content: "Outstanding logistics solutions. Their customer support is fantastic and they always go above and beyond.",
-      avatar: "/Images/avatar-3.jpg",
+      avatar: "/Images/avatar-3.webp",
       client: "Ahmed R., Sharjah"
     },
     {
       id: 4,
       content: "Reliable, efficient, and cost-effective. Gulf Cargo has streamlined our supply chain operations significantly.",
-      avatar: "/Images/avatar-4.jpg",
+      avatar: "/Images/avatar-4.webp",
       client: "Lisa M., Dubai"
     },
     {
       id: 5,
       content: "Professional team with excellent communication. They make complex logistics seem effortless.",
-      avatar: "/Images/avatar-5.jpg",
+      avatar: "/Images/avatar-5.webp",
       client: "Omar H., Ras Al Khaimah"
     },
     {
       id: 6,
       content: "Top-notch service with competitive pricing. Gulf Cargo consistently exceeds our expectations.",
-      avatar: "/Images/avatar-6.jpg",
+      avatar: "/Images/avatar-6.webp",
       client: "Emma J., Fujairah"
     }
   ];

@@ -7,7 +7,7 @@ const hero = () => {
   return (
     <>
         <section className='hero'>
-            <div className="hero-container container relative bg-[url('/Banners/banner-1.png')] bg-cover bg-center bg-no-repeat">
+            <div className="hero-container container relative bg-[url('/Banners/main-banner-1.webp')] bg-cover bg-center bg-no-repeat">
                 <div className="hero-content-flex container-small flex items-center">
                     <div className="hero-content">
                         <h1 className='hero-content-heading'>GULF CARGO LLC</h1>

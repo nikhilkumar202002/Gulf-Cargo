@@ -2,6 +2,7 @@ import { Button } from '@radix-ui/themes';
 import React from 'react';
 import { servicesData } from "../data/servicesData";
 import "./HomeStyles.css";
+import Link from "next/link";
 
 const services = () => {
   return (
@@ -31,7 +32,12 @@ const services = () => {
                 </div>
 
                   <div className="our-service-card-btn">
-                                <Button>View More</Button>
+                              
+  <Link href="/services" target="_blank" rel="noopener noreferrer">
+    View More
+  </Link>
+
+
                             </div>
             </div>
         </section>
