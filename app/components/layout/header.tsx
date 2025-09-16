@@ -1,16 +1,15 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { BiPhoneCall } from "react-icons/bi";
 import { LuMail } from "react-icons/lu";
 import { FaInstagram, FaFacebook, FaLinkedinIn } from "react-icons/fa";
 import Image from 'next/image';
 import "./Header.css";
-import { MdArrowForward} from 'react-icons/md'
+import { MdArrowForward } from 'react-icons/md'
 import { RiCloseLargeFill } from "react-icons/ri";
 import { CgMenuGridO } from "react-icons/cg";
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
 import Link from 'next/link'
 
 const Header = () => {
@@ -18,15 +17,13 @@ const Header = () => {
     const pathname = usePathname()
     const [isOpen, setIsOpen] = useState(false)
 
-
     const navItems = [
         { name: 'Home', href: '/' },
         { name: 'Company', href: '/company' },
         { name: 'Services', href: '/services' },
-        { name: 'Blog', href: '/blog' },
+        // { name: 'Blog', href: '/blog' },
         { name: 'Track your order', href: '/trackorder' },
     ]
-
 
     return (
         <>
@@ -55,17 +52,19 @@ const Header = () => {
 
                             {/* Logo */}
                             <div className="navbar-main-left">
-                                <Image src="/Logo.png" width={120} height={40} alt='Gulf Cargo' priority/>
+                                <Image src="/Logo.png" width={120} height={40} alt='Gulf Cargo' priority />
                             </div>
 
                             {/* Desktop Menu */}
                             <div className="hidden md:block navbar-main-right">
-                                <ul className="inline-flex gap-5 items-center">
+                                <ul className="inline-flex gap-5 items-center navbar-items-list">
 
                                     {navItems.map((item) => (
                                         <li
                                             key={item.name}
-                                            className={`${pathname === item.href ? 'text-[#262262] font-semibold' : 'text-gray-700'} hover:text-[#262262] transition`}
+                                            className={`${
+                                                pathname === item.href ? 'text-[#ED2624] font-semibold active' : 'text-gray-700'
+                                            } hover:text-[#ED2624] transition`}
                                         >
                                             <Link href={item.href}>{item.name}</Link>
                                         </li>
@@ -73,9 +72,9 @@ const Header = () => {
 
                                     <li className="navbar-main-btn">
                                         <Link href="/support">
-                                        <button className="navbar-btn flex items-center gap-1 text-white py-2 px-4 rounded">
-                                            Contact <MdArrowForward />
-                                        </button>
+                                            <button className="navbar-btn flex items-center gap-1 text-white py-2 px-4 rounded">
+                                                Contact <MdArrowForward />
+                                            </button>
                                         </Link>
                                     </li>
                                 </ul>
@@ -96,7 +95,9 @@ const Header = () => {
                                     {navItems.map((item) => (
                                         <li
                                             key={item.name}
-                                            className={`${pathname === item.href ? 'text-[#262262] font-semibold' : 'text-gray-700'} hover:text-[#262262] transition`}
+                                            className={`${
+                                                pathname === item.href ? 'text-[#ED2624] font-semibold' : 'text-gray-700'
+                                            } hover:text-[#ED2624] transition`}
                                         >
                                             <Link href={item.href} onClick={() => setIsOpen(false)}>
                                                 {item.name}
@@ -105,9 +106,9 @@ const Header = () => {
                                     ))}
                                     <li>
                                         <Link href="/support">
-                                        <button className="flex items-center gap-1 bg-[#262262] text-white py-2 px-4 rounded">
-                                            Contact <MdArrowForward />
-                                        </button>
+                                            <button className="flex items-center gap-1 bg-[#ED2624] text-white py-2 px-4 rounded">
+                                                Contact <MdArrowForward />
+                                            </button>
                                         </Link>
                                     </li>
                                 </ul>

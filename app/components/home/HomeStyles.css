@@ -144,14 +144,20 @@
     font-weight: 500;
     color: #787878;
     line-height: 21px;
-    padding: 10px 0px 30px;
+    padding: 10px 0px 0px;
+}
+.our-service-card-btn{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 30px;
 }
 .our-service-card-btn button{
     padding: 10px 20px;
     background-color: var(--primary-color);
     border-radius: 7px;
     color: white;
-    font-family: "Dm Sans";
+    font-family: "Dm Sans";   
 }
 .our-service-card{
     padding: 40px;
@@ -467,5 +473,4 @@
     .contact-form{
         padding: 30px;
     }
-    
 }

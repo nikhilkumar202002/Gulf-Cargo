@@ -1,6 +1,7 @@
 import { Button } from '@radix-ui/themes';
-import React from 'react'
+import React from 'react';
 import { servicesData } from "../data/servicesData";
+import "./HomeStyles.css";
 
 const services = () => {
   return (
@@ -23,15 +24,15 @@ const services = () => {
                             <div className="our-service-card-descrption">
                                 <p>{service.description}</p>
                             </div>
-                            <div className="our-service-card-btn">
-                                <Button>View More</Button>
-                            </div>
+                          
                         </div>
                          ))}
-
-                   
                     </div>
                 </div>
+
+                  <div className="our-service-card-btn">
+                                <Button>View More</Button>
+                            </div>
             </div>
         </section>
     </>
