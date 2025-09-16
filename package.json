@@ -5,8 +5,10 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
+    "export": "next export",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "build:static": "next build && next export"
   },
   "dependencies": {
     "@fontsource/dm-sans": "^5.2.6",
