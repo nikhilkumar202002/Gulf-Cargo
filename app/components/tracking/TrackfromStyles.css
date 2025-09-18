@@ -118,7 +118,26 @@
   color: white;
   margin-top: 10px;
 }
-
+.hero-tracking-modal{
+  background-color: rgba(0, 0, 0, 0.664);
+}
+.hero-tracking-modal-heading{
+  font-size: 25px;
+  font-family: "Dm Sans";
+  color: var(--primary-color);
+}
+.hero-modal-tracking-container{
+  padding-top: 20px;
+}
+.hero-modal-tracking-btn{
+  padding-top: 20px;
+}
+.hero-modal-tracking-btns{
+  background-color: var(--secondary-color);
+  color: white;
+  padding: 8px 20px;
+  border-radius: 10px;
+}
 @media (max-width:1024px) {
   .tracking-tabs{
         gap: 0px !important;
