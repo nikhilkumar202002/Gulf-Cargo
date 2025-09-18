@@ -9,6 +9,9 @@
   --primary-color: #262262;
   --secondary-color: #ED2624;
 }
+body {
+  padding-top: 48px; /* same as header height */
+}
 
 @theme inline {
   --color-background: var(--background);

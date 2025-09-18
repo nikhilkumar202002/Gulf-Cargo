@@ -19,8 +19,9 @@
     padding: 15px 0;
     background-color: white;
 }
-.navbar-main-right ul li{
+.navbar-main-right li{
     font-size: 17px;
+    font-weight: 500;
     font-family: "Dm Sans";
 }
 .navbar-main-btn button{
