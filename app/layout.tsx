@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Header from "./components/layout/header";
 import Footer from "./components/layout/footer";
-import './globals.css'
+import BackToTop from "./components/common/BackToTop";
+import WhatsAppFab from "./components/common/WhatsAppFab";
+import Tracking from "./components/common/Tracking";
 
 export const metadata: Metadata = {
   title: "Gulf Cargo | Freight Forwarding & Logistics Services in GCC",
@@ -24,6 +26,9 @@ export default function RootLayout({
       <Header/>
       <main>{children}</main>
        <Footer/>
+       <WhatsAppFab />
+       <Tracking/>
+       <BackToTop/>
       </body>
     </html>
   );

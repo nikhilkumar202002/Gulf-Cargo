@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import React from 'react'
 import { FaInstagram, FaFacebook, FaLinkedinIn } from "react-icons/fa";
+import Link from 'next/link';
 import "./Footer.css";
 
 const Footer = () => {
@@ -26,11 +27,11 @@ const Footer = () => {
                  <div className="footer-item">
                 <div className='footer-menu-heading'>Quick Links</div>
                     <ul>
-                      <li>Home</li>
-                      <li>About Us</li>
-                      <li>Service</li>
-                      <li>Tracking</li>
-                      <li>Contact Us</li>
+                      <li><Link href="/">Home</Link></li>
+                      <li><Link href="/company">About Us</Link></li>
+                      <li><Link href="/services">Service</Link></li>
+                      <li><Link href="/trackorder">Tracking</Link></li>
+                      <li><Link href="/support">Contact Us</Link></li>
                     </ul>
                 </div>
               </div>
@@ -47,7 +48,7 @@ const Footer = () => {
               <div className="footer-col">
                 <div className='footer-menu-heading'>Contact Information</div>
                  <ul>
-                      <li>Location: Gulf cargo LLC, UAE</li>
+                      <li>Location: Gulf cargo LLC, Al Oud, Hamad Ibn Laaboun, 2912, Al Oud, Riyadh 12665, Riyadh 12211, Saudi Arabia</li>
                       <li>Call Now: +966 54 761 9393</li>
                       <li>Email Us: info@gulfcargo.com</li>
                       <li>Time: Sunday – Saturday, 8:00 AM – 8:00 PM</li>

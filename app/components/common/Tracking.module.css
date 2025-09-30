@@ -1,0 +1,96 @@
+:root {
+  --track-size: 50px;
+  --track-bg: #ED2624;             /* brand red */
+  --track-fg: #ffffff;             /* icon color */
+  --shadow: 0 10px 30px rgba(0,0,0,.25);
+}
+
+.wrap {
+  position: fixed;
+  right: 28px;
+  bottom: 156px;                   /* sits above WhatsApp (≈88) & BackToTop (≈24) */
+  z-index: 1000;
+}
+
+.btn {
+  width: var(--track-size);
+  height: var(--track-size);
+  border: none;
+  border-radius: 9999px;
+  background: var(--track-bg);
+  color: var(--track-fg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform .15s ease, box-shadow .2s ease, background .2s ease;
+  position: relative;
+  outline: none;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 36px rgba(0,0,0,.32);
+  background: #d4201f;             /* slightly darker on hover */
+}
+
+.icon {
+  font-size: 24px;                 /* IoLocation size */
+  line-height: 1;
+}
+
+/* subtle pulse ring */
+.btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  box-shadow: 0 0 0 0 rgba(237, 38, 36, 0.35);
+  animation: pulse 2.2s ease-out infinite;
+}
+@keyframes pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(237, 38, 36, 0.35); }
+  70%  { box-shadow: 0 0 0 16px rgba(237, 38, 36, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(237, 38, 36, 0); }
+}
+
+/* tooltip */
+.tooltip {
+  position: absolute;
+  right: 25px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #111;
+  color: #fff;
+  font-size: 12px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .15s ease, transform .15s ease;
+  box-shadow: 0 6px 18px rgba(0,0,0,.2);
+}
+.tooltip::after {
+  content: "";
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 6px solid transparent;
+  border-left-color: #111;
+}
+
+.btn:hover + .tooltip,
+.btn:focus-visible + .tooltip {
+  opacity: 1;
+  transform: translate(-2px, -50%);
+}
+
+/* mobile spacing */
+@media (max-width: 640px) {
+  .wrap { right: 16px; bottom: 148px; }
+  :root { --track-size: 52px; }
+  .icon { font-size: 22px; }
+}

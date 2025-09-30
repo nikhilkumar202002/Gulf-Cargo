@@ -61,7 +61,7 @@ const Header = () => {
     <>
       {/* Fixed wrapper for full header */}
       <header
-        className={`fixed left-0 right-0 top-0 bg-white transition-transform duration-300 ease-out z-[60] ${sticky ? 'translate-y-0' : '-translate-y-full'}`}
+        className={`navbar-top-container fixed left-0 right-0 top-0 bg-white transition-transform duration-300 ease-out z-[60] ${sticky ? 'translate-y-0' : '-translate-y-full'}`}
       >
         {/* Top Bar */}
         <div className="navbar-top bg-gray-100 text-sm">

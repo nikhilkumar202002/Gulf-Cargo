@@ -141,3 +141,36 @@
     font-size: 14px;
     font-family: "Dm Sans";
 }
+
+@media (max-width:1080px) {
+    .coperative-locations,.about-content,.mission-vision{
+        padding: 80px 17px;
+    }
+    .about-content-page-heading, .about-content-page-description{
+        width: 100%;
+    }
+    .about-content-page-heading{
+        font-size: 28px !important;
+        line-height: 36px;
+    }
+    .about-content-page-description{
+        display: none;
+    }
+    .about-banner{
+        padding: 0px 17px;
+    }
+    .about-page-container{
+        padding: 30px 30px !important;
+        height: 350px !important;
+        display: flex;
+        flex-direction: column;
+        justify-content: end;
+        
+    }
+    .about-content-image img{
+        height: 350px;
+    }
+    .track-form-heading{
+        font-size: 22px;
+    }
+}

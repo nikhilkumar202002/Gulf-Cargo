@@ -151,11 +151,6 @@ function deriveStageFromApi(payload?: TrackResponse) {
     }
   }
 
-  // 3) replace catch (e: any) with unknown helper
-function errMessage(e: unknown) {
-  return e instanceof Error ? e.message : typeof e === "string" ? e : JSON.stringify(e);
-}
-
   // 2) Fallback: name mapping
   const key = detail.toLowerCase();
   if (STATUS_NAME_TO_STAGE[key] !== undefined) {

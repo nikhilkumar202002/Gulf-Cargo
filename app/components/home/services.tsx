@@ -33,7 +33,7 @@ const services = () => {
 
                   <div className="our-service-card-btn">
                               
-  <Link href="/services" target="_blank" rel="noopener noreferrer">
+  <Link className='our-service-card-btn' href="/services" target="_blank" rel="noopener noreferrer">
     View More
   </Link>
 

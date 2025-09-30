@@ -152,7 +152,7 @@
     align-items: center;
     padding-top: 30px;
 }
-.our-service-card-btn button{
+.our-service-card-btn a{
     padding: 10px 20px;
     background-color: var(--primary-color);
     border-radius: 7px;
