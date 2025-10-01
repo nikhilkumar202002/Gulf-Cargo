@@ -2,12 +2,14 @@
 @import "@radix-ui/themes/styles.css";
 @import "@fontsource/dm-sans";
 @import "@fontsource/montserrat";
+@import "@fontsource/inter";
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
   --primary-color: #262262;
   --secondary-color: #ED2624;
+  --brand-red: #ED2624;
 }
 body {
   padding-top: 48px; /* same as header height */

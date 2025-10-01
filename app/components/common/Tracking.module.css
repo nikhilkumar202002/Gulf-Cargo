@@ -1,18 +1,17 @@
-:root {
-  --track-size: 50px;
-  --track-bg: #ED2624;             /* brand red */
-  --track-fg: #ffffff;             /* icon color */
-  --shadow: 0 10px 30px rgba(0,0,0,.25);
-}
-
 .wrap {
   position: fixed;
   right: 28px;
-  bottom: 156px;                   /* sits above WhatsApp (≈88) & BackToTop (≈24) */
+  bottom: 156px;              /* above WhatsApp (~88) & BackToTop (~24) */
   z-index: 1000;
 }
 
 .btn {
+  /* vars scoped locally */
+  --track-size: 50px;
+  --track-bg: #ED2624;
+  --track-fg: #ffffff;
+  --shadow: 0 10px 30px rgba(0,0,0,.25);
+
   width: var(--track-size);
   height: var(--track-size);
   border: none;
@@ -32,15 +31,15 @@
 .btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 14px 36px rgba(0,0,0,.32);
-  background: #d4201f;             /* slightly darker on hover */
+  background: #d4201f;
 }
 
 .icon {
-  font-size: 24px;                 /* IoLocation size */
+  font-size: 24px;
   line-height: 1;
 }
 
-/* subtle pulse ring */
+/* pulse ring */
 .btn::after {
   content: "";
   position: absolute;
@@ -58,7 +57,7 @@
 /* tooltip */
 .tooltip {
   position: absolute;
-  right: 25px;
+  right: calc(100% + 10px);
   top: 50%;
   transform: translateY(-50%);
   background: #111;
@@ -81,16 +80,15 @@
   border: 6px solid transparent;
   border-left-color: #111;
 }
-
 .btn:hover + .tooltip,
 .btn:focus-visible + .tooltip {
   opacity: 1;
   transform: translate(-2px, -50%);
 }
 
-/* mobile spacing */
+/* mobile */
 @media (max-width: 640px) {
   .wrap { right: 16px; bottom: 148px; }
-  :root { --track-size: 52px; }
+  .btn  { --track-size: 52px; }
   .icon { font-size: 22px; }
 }

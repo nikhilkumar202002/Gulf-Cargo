@@ -1,0 +1,42 @@
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --primary-color: #262262;
+  --secondary-color: #ED2624;
+  --brand-red: #ED2624;
+}
+
+.privacy-policy-heading{
+    font-size: 30px;
+    font-family: "Dm Sans";
+    font-weight: 600;
+    color: var(--secondary-color);
+}
+.privacy-policy-header p{
+  font-size: 16px;
+  font-family: "Inter";
+  font-weight: 500;
+}
+.privacy-policy-sub-heading{
+  font-size: 22px;
+  font-weight: 600;
+  font-family: "DM Sans";
+  padding-top: 20px;
+  color: var(--foreground);
+}
+.privacy-policy-header ul{
+  list-style-type: disc;
+  padding-left: 30px;
+  font-family: "Inter";
+  font-size: 16px;
+  color: #535353;
+}
+.privacy-policy{
+  padding: 80px 0px;
+}
+.privacy-policy-sub-heading-one{
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--foreground);
+  font-family: "Inter";
+}
