@@ -10,12 +10,7 @@ const hero = () => {
   return (
     <>
       <section className="hero">
-        <motion.div
-          className="hero-container container relative bg-[url('/Banners/main-banner-1.webp')] bg-cover bg-center bg-no-repeat"
-          initial={{ opacity: 0 }} // Start with invisible
-          animate={{ opacity: 1 }} // Fade in
-          transition={{ duration: 1 }} // Fade in duration
-        >
+        <div className="hero-container container relative bg-[url('/Banners/main-banner-1.webp')] bg-cover bg-center bg-no-repeat">
           <motion.div
             className="hero-content-flex container-small flex items-center"
             initial={{ opacity: 0 }} // Start invisible
@@ -59,7 +54,7 @@ const hero = () => {
               <TrackingForm />
             </motion.div>
           </motion.div>
-        </motion.div>
+        </div>
       </section>
     </>
   )
