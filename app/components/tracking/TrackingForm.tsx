@@ -14,6 +14,30 @@ export default function TrackingForm() {
   const [isModalOpen, setModalOpen] = useState(false);
   const openModal = () => setModalOpen(true);
 
+  const [trackingNumber, setTrackingNumber] = useState("");
+  const [invoiceNumber, setInvoiceNumber] = useState("");
+  const [valid, setValid] = useState(true);
+
+  const handleTrackingSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!trackingNumber || trackingNumber.length < 6) {
+      setValid(false);
+      return;
+    }
+    setValid(true);
+    openModal();
+  };
+
+  const handleInvoiceSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!invoiceNumber || invoiceNumber.length < 4) {
+      setValid(false);
+      return;
+    }
+    setValid(true);
+    openModal();
+  };
+
   return (
     <div className="tracking-form-box w-full max-w-md bg-white shadow-lg p-8 mx-auto relative">
       <Tabs.Root defaultValue="trackorder">
@@ -38,12 +62,6 @@ export default function TrackingForm() {
                 aria-label="Tracking Types"
               >
                 <Tabs.Trigger
-                  value="mobile"
-                  className="tracking-tab px-4 py-2 rounded-full focus:outline-none"
-                >
-                  Mobile No.
-                </Tabs.Trigger>
-                <Tabs.Trigger
                   value="invoice"
                   className="tracking-tab px-4 py-2 rounded-full focus:outline-none"
                 >
@@ -57,29 +75,17 @@ export default function TrackingForm() {
                 </Tabs.Trigger>
               </Tabs.List>
 
-              <Tabs.Content value="mobile" className="tracking-content">
-                <input
-                  type="text"
-                  placeholder="+91 98765 43210"
-                  className="tracking-input mb-6 block w-full bg-gray-100 rounded-xl px-5 py-3 text-lg text-gray-400 outline-none"
-                />
-                <button
-                  className="tracking-otp-btn w-full text-white font-semibold text-lg py-3 flex items-center justify-center gap-2"
-                  onClick={openModal} // Open modal on button click
-                >
-                  Track your order <span role="img" aria-label="location"><MdOutlineLocationOn /></span>
-                </button>
-              </Tabs.Content>
-
               <Tabs.Content value="invoice" className="tracking-content">
                 <input
                   type="text"
                   placeholder="Invoice Number"
                   className="tracking-input mb-6 block w-full bg-gray-100 rounded-xl px-5 py-3 text-lg text-gray-400 outline-none"
+                  value={invoiceNumber}
+                  onChange={(e) => setInvoiceNumber(e.target.value)}
                 />
                 <button
                   className="tracking-otp-btn w-full text-white font-semibold text-lg py-3 flex items-center justify-center gap-2"
-                  onClick={openModal} // Open modal on button click
+                  onClick={handleInvoiceSubmit} // Open modal on button click
                 >
                   Track your order <span role="img" aria-label="location"><MdOutlineLocationOn /></span>
                 </button>
@@ -90,13 +96,16 @@ export default function TrackingForm() {
                   type="text"
                   placeholder="Tracking Number"
                   className="tracking-input mb-6 block w-full bg-gray-100 rounded-xl px-5 py-3 text-lg text-gray-400 outline-none"
+                  value={trackingNumber}
+                  onChange={(e) => setTrackingNumber(e.target.value)}
                 />
                 <button
                   className="tracking-otp-btn w-full text-white font-semibold text-lg py-3 flex items-center justify-center gap-2"
-                  onClick={openModal} // Open modal on button click
+                  onClick={handleTrackingSubmit} // Open modal on button click
                 >
                   Track your order <span role="img" aria-label="location"><MdOutlineLocationOn /></span>
                 </button>
+                {!valid && <p className="text-red-500 text-sm">Please enter a valid tracking number (min 6 characters)</p>}
               </Tabs.Content>
             </Tabs.Root>
           </div>
@@ -105,14 +114,14 @@ export default function TrackingForm() {
 
       {/* Radix UI Modal */}
       <Dialog.Root open={isModalOpen} onOpenChange={setModalOpen}>
-        <Dialog.Content className=" hero-tracking-modal fixed inset-0 flex items-center justify-center bg-opacity-10">
+        <Dialog.Content className="hero-tracking-modal fixed inset-0 flex items-center justify-center bg-opacity-10">
           <div className="modal-box bg-white rounded-lg p-6 shadow-lg max-w-3xl w-full">
             <Dialog.Title className="hero-tracking-modal-heading text-xl font-semibold">Tracking Journey</Dialog.Title>
             <Dialog.Description className=" text-gray-600">
               Stay updated on your shipment progress
             </Dialog.Description>
 
-            <div className="hero-modal-tracking-container mt-6 flex items-center justify-between relative ">
+            <div className="hero-modal-tracking-container mt-6 flex items-center justify-between relative">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between relative max-w-3xl w-full">
                 {/* Progress line (only for sm and up) */}
                 <div className="hidden sm:block absolute top-1/2 left-0 right-0 h-0.5 bg-gray-200 -z-10"></div>
@@ -174,7 +183,6 @@ export default function TrackingForm() {
               <Dialog.Close asChild>
                 <Button className='hero-modal-tracking-btns' color="danger" variant="light">Close</Button>
               </Dialog.Close>
-
             </div>
           </div>
         </Dialog.Content>

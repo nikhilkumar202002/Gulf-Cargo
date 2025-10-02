@@ -6,23 +6,27 @@ import { MdPhoneCallback } from "react-icons/md";
 import { IoMailUnreadSharp } from "react-icons/io5";
 import { PiClockCountdownFill } from "react-icons/pi";
 import { Button } from '@radix-ui/themes';
-import { motion } from 'framer-motion';
+import { motion, Variants, cubicBezier } from "framer-motion";
 
-const easing = [0.22, 1, 0.36, 1];
+const EASE_OUT = cubicBezier(0.16, 1, 0.3, 1);
+const EASE_STD = cubicBezier(0.2, 0.65, 0.3, 0.9);
 
-const staggerParent = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.12, delayChildren: 0.1 } }
+const staggerParent: Variants = {
+  hidden: {},
+  show: {
+    transition: { when: "beforeChildren", staggerChildren: 0.1 },
+  },
 };
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: easing } }
+// Children animations
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  show:   { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE_OUT } },
 };
 
-const fadeIn = {
+const fadeIn: Variants = {
   hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { duration: 0.5, ease: easing } }
+  show:   { opacity: 1, transition: { duration: 0.35, ease: EASE_STD } },
 };
 
 function ContactUs() {
@@ -116,10 +120,11 @@ function ContactUs() {
 
                 <motion.div
                   className="contact-form-row mt-4 inline-block"
+                  variants={fadeUp}
                   initial={{ opacity: 0, y: 10 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.4, ease: easing, delay: 0.1 }}
+                  transition={{ duration: 0.4, delay: 0.1 }}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >

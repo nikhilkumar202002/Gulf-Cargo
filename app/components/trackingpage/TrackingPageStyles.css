@@ -141,7 +141,9 @@
     font-size: 14px;
     font-family: "Dm Sans";
 }
-
+.track-title-description{
+    padding-top: 10px;
+}
 @media (max-width:1080px) {
     .coperative-locations,.about-content,.mission-vision{
         padding: 80px 17px;
@@ -172,5 +174,13 @@
     }
     .track-form-heading{
         font-size: 22px;
+    }
+    .track-title-description{
+        text-align: left;
+    }
+    .track-list-flex{
+        display: flex;
+        gap: 10px;
+        padding: 10px;
     }
 }
