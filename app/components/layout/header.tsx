@@ -14,7 +14,8 @@ import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
 
 const Header = () => {
-  const pathname = usePathname()
+   const pathnameRaw = usePathname() || "/";
+  const pathname = pathnameRaw.replace(/\/+$/, "") || "/";
   const [isOpen, setIsOpen] = useState(false)
   const [sticky, setSticky] = useState(true)
 
@@ -57,6 +58,11 @@ const Header = () => {
     { name: 'Track your order', href: '/trackorder' },
   ]
 
+    const isActive = (href: string) => {
+    if (href === "/") return pathname === "/";
+    // active on exact or nested, e.g. /company/team highlights /company
+    return pathname === href || pathname.startsWith(href + "/");
+  };
   return (
     <>
       {/* Fixed wrapper for full header */}
@@ -66,14 +72,13 @@ const Header = () => {
         {/* Top Bar */}
         <div className="navbar-top bg-gray-100 text-sm">
           <div className="navbar-top-container container mx-auto flex justify-between items-center py-1 px-4">
-            <ul className='inline-flex gap-4'>
-              <li className='flex items-center gap-2'><BiPhoneCall />+966 54 761 9393, +966 54 314 5105</li>
-              <li className='flex items-center gap-2'><LuMail />info@gulfcargoksa.com</li>
+            <ul className='inline-flex gap-4 navbar-top-list'>
+              <li className='flex items-center gap-2'><BiPhoneCall /><Link href="tel:+966547619393">+966 54 761 9393,</Link> <Link href="tel:+966543145105">+966 54 314 5105</Link></li>
+              <li className='flex items-center gap-2'><LuMail /><Link href="mailto:info@gulfcargoksa.com">info@gulfcargoksa.com</Link></li>
             </ul>
-            <ul className='inline-flex gap-2'>
-              <li><FaInstagram /></li>
-              <li><FaFacebook /></li>
-              <li><FaLinkedinIn /></li>
+            <ul className='inline-flex gap-2 '>
+              <li className='navbar-top-social-icons'><Link href="https://www.instagram.com/gulf_cargo_ksa/?hl=en"><FaInstagram /></Link></li>
+              <li className='navbar-top-social-icons'><Link href="https://www.facebook.com/gulfcargoksa/"><FaFacebook /></Link></li>
             </ul>
           </div>
         </div>
@@ -84,23 +89,32 @@ const Header = () => {
             <Image src="/Logo.png" width={120} height={40} alt='Gulf Cargo' priority />
 
             {/* Desktop */}
-            <ul className="navbar-main-right hidden md:inline-flex gap-5 items-center">
-              {navItems.map((item) => (
-                <li
-                  key={item.name}
-                  className={`${pathname === item.href ? 'text-[#ED2624]' : 'text-gray-700'} hover:text-[#ED2624] transition`}
-                >
-                  <Link href={item.href}>{item.name}</Link>
+          <ul className="navbar-main-right hidden md:inline-flex gap-5 items-center">
+            {navItems.map((item) => {
+              const active = isActive(item.href);
+              return (
+                <li key={item.name}>
+                  <Link
+                    href={item.href}
+                    className={[
+                      "transition",
+                      active ? "text-[#ED2624] font-semibold" : "text-gray-700 hover:text-[#ED2624]",
+                    ].join(" ")}
+                    aria-current={active ? "page" : undefined}
+                  >
+                    {item.name}
+                  </Link>
                 </li>
-              ))}
-              <li>
-                <Link href="/support">
-                  <button className="flex items-center gap-1 bg-[#ED2624] text-white py-2 px-4 rounded">
-                    Contact <MdArrowForward />
-                  </button>
-                </Link>
-              </li>
-            </ul>
+              );
+            })}
+            <li>
+              <Link href="/support">
+                <button className="flex items-center gap-1 bg-[#ED2624] text-white py-2 px-4 rounded">
+                  Contact <MdArrowForward />
+                </button>
+              </Link>
+            </li>
+          </ul>
 
             {/* Mobile Hamburger */}
             <div className="md:hidden">

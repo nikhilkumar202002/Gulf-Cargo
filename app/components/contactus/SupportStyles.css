@@ -35,7 +35,7 @@
 .support-content-page-description{
     font-size: 16px;
     color: rgb(227, 227, 227);
-    font-family: "Montserrat";
+    font-family: "Inter";
     padding: 10px 0px 30px;
     width: 60%;
 }
@@ -71,7 +71,7 @@
 .support-map-headoffice-description{
     font-size: 16px;
     font-weight: 550;
-    font-family: "Montserrat";
+    font-family: "Inter";
     color: #5C5C5C;
     padding-bottom: 20px;
 }
@@ -89,7 +89,7 @@
 .support-map-list h1{
     font-size: 16px;
     font-weight: 600;
-    font-family: "Montserrat";
+    font-family: "Inter";
     color: #1e1e1e;
 }
 .padding{

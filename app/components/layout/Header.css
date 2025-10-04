@@ -5,12 +5,18 @@
 .navbar-top{
     background-color: var(--primary-color);
     color: white;
+    padding: 8px 0px;
 }
 .navbar-container{
     font-family: "DM Sans";
 }
 .navbar-top-list{
-    font-size: 14px;
+    font-size: 13px;
+    font-family: "Inter";
+    font-weight: 500;
+}
+.navbar-top-social-icons{
+    font-size: 18px !important;
 }
 .navbar-main{
     padding: 15px 0;

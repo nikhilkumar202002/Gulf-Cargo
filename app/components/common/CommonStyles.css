@@ -8,7 +8,7 @@
 }
 .contact-grid-number{
     font-size: 16px;
-    font-family: "Montserrat";
+    font-family: "Inter";
     font-weight: 500;
     color: rgb(38, 38, 38);
     padding-left: 25px;
@@ -23,7 +23,7 @@
 
 .support-branch-numbers{
      font-size: 16px;
-    font-family: "Montserrat";
+    font-family: "Inter";
     font-weight: 500;
     padding-left: 25px;
     cursor: pointer;

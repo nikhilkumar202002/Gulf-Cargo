@@ -1,193 +1,203 @@
-'use client'
+'use client';
 
-import { useState } from 'react';
-import * as Tabs from '@radix-ui/react-tabs';
-import * as Dialog from '@radix-ui/react-dialog'; // Import Dialog from Radix UI
-import { MdOutlineLocationOn } from "react-icons/md";
-import { Button } from '@heroui/react';  // Import Button from Hero UI
-import { Package, Truck, MapPin, CheckCircle2, Clock } from "lucide-react"
+import React, { useEffect, useState } from 'react';
+import { MdOutlineLocationOn } from 'react-icons/md';
+import './TrackfromStyles.css';
+import TrackingModal, { TrackingModalShipment } from './TrackingModal';
+import { fetchTrackingData } from '../../api/trackingApi';
 
-import "./TrackfromStyles.css"
+type Tab = 'invoice' | 'tracking';
 
-export default function TrackingForm() {
+const statusKeyOrder = ['booked','in_transit','arrival','out_for_delivery','delivered'] as const;
+type StageKey = typeof statusKeyOrder[number];
 
-  const [isModalOpen, setModalOpen] = useState(false);
-  const openModal = () => setModalOpen(true);
+function norm(s?: string) {
+  return (s || '').toString().trim().toLowerCase().replace(/\s+/g, '_');
+}
 
-  const [trackingNumber, setTrackingNumber] = useState("");
-  const [invoiceNumber, setInvoiceNumber] = useState("");
-  const [valid, setValid] = useState(true);
-
-  const handleTrackingSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!trackingNumber || trackingNumber.length < 6) {
-      setValid(false);
-      return;
-    }
-    setValid(true);
-    openModal();
+function mapStatusToIndex(statusName?: string, statusId?: number): number {
+  const n = norm(statusName);
+  // Common aliases
+  const alias: Record<string, StageKey> = {
+    received: 'booked',
+    pending: 'booked',
+    forwarded: 'in_transit',
+    transfer: 'in_transit',
+    arrived: 'arrival',
+    clearing: 'arrival',
+    customs: 'arrival',
+    'out_for_delivery': 'out_for_delivery',
+    delivered: 'delivered',
+    complete: 'delivered',
   };
 
-  const handleInvoiceSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!invoiceNumber || invoiceNumber.length < 4) {
+  if (n && alias[n]) return statusKeyOrder.indexOf(alias[n]);
+  if (n && statusKeyOrder.includes(n as StageKey)) {
+    return statusKeyOrder.indexOf(n as StageKey);
+  }
+
+  // Fallback by id if your API uses ascending stage ids
+  if (typeof statusId === 'number') {
+    // Clamp 0..4
+    return Math.max(0, Math.min(4, statusId));
+  }
+  return -1; // unknown → show neutral UI
+}
+
+const TrackingForm: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<Tab>('tracking');
+  const [trackingNumber, setTrackingNumber] = useState('');
+  const [invoiceNumber, setInvoiceNumber] = useState('');
+  const [valid, setValid] = useState(true);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [seedQuery, setSeedQuery] = useState<string>('');
+  const [loading, setLoading] = useState(false);
+  const [shipment, setShipment] = useState<TrackingModalShipment | undefined>(undefined);
+  const [error, setError] = useState<string | undefined>(undefined);
+
+  // keep body lock (redundant with modal but harmless)
+  useEffect(() => {
+    document.body.style.overflow = isModalOpen ? 'hidden' : '';
+  }, [isModalOpen]);
+
+  const openWith = async (val: string) => {
+    if (!val || val.trim().length < 6) {
       setValid(false);
       return;
     }
     setValid(true);
-    openModal();
+    const code = val.trim();
+
+    // Open modal in skeleton state
+    setShipment(undefined);
+    setError(undefined);
+    setSeedQuery(code);
+    setIsModalOpen(true);
+    setLoading(true);
+
+    try {
+      const data = await fetchTrackingData(code);
+      // Expecting fields (any subset): tracking_code/tracking_no, status_name/status, status_id,
+      // method, origin, origin_port, destination, destination_port, updated_at, exception
+      const trackingCode =
+        data?.tracking_code || data?.tracking_no || data?.trackingNo || code;
+
+      const statusName = data?.status_name || data?.status || '';
+      const statusId   = typeof data?.status_id === 'number' ? data?.status_id : undefined;
+
+      const mapped: TrackingModalShipment = {
+        trackingCode,
+        method: data?.method || data?.shipment_method || data?.mode || undefined,
+        statusName: statusName || undefined,
+        statusId,
+        origin: data?.origin || undefined,
+        originPort: data?.origin_port || undefined,
+        destination: data?.destination || undefined,
+        destinationPort: data?.destination_port || undefined,
+        updatedAt: data?.updated_at || data?.updatedAt || undefined,
+        exceptionNote: data?.exception || data?.hold_reason || undefined,
+        currentIndex: mapStatusToIndex(statusName, statusId),
+      };
+
+      setShipment(mapped);
+    } catch (e: any) {
+      setError(e?.message || 'Failed to fetch tracking data');
+      // keep modal open; show error inside summary card via exceptionNote
+      setShipment({
+        trackingCode: code,
+        statusName: 'Not Found',
+        exceptionNote: e?.message || 'No record found for this code.',
+        currentIndex: -1,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const value = activeTab === 'tracking' ? trackingNumber : invoiceNumber;
+    openWith(value);
   };
 
   return (
-    <div className="tracking-form-box w-full max-w-md bg-white shadow-lg p-8 mx-auto relative">
-      <Tabs.Root defaultValue="trackorder">
-        <Tabs.List
-          className="tracking-tabs tracking-shipping-tabs flex gap-5 mb-5"
-          aria-label="Tracking Types"
-        >
-          <Tabs.Trigger
-            value="trackorder"
-            className="tracking-tab tracking-shipping-tab px-4 py-2 focus:outline-none"
+    <>
+      <div className="tracking-form-box w-full max-w-md bg-white shadow-lg p-8 mx-auto relative rounded-2xl">
+        <h2 className="mb-4 tracking-form-heading text-xl font-semibold">Track Order Form</h2>
+
+        {/* tabs */}
+        <div className="mb-5 flex gap-3">
+          <button
+            type="button"
+            onClick={() => setActiveTab('invoice')}
+            className={[
+              'px-4 py-2 rounded-full border',
+              activeTab === 'invoice' ? 'bg-black text-white border-black' : 'bg-gray-100 text-gray-800 border-gray-200'
+            ].join(' ')}
           >
-            Track Order
-          </Tabs.Trigger>
-        </Tabs.List>
+            Invoice No.
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('tracking')}
+            className={[
+              'px-4 py-2 rounded-full border',
+              activeTab === 'tracking' ? 'bg-black text-white border-black' : 'bg-gray-100 text-gray-800 border-gray-200'
+            ].join(' ')}
+          >
+            Tracking No
+          </button>
+        </div>
 
-        <Tabs.Content value="trackorder">
-          <div>
-            <h2 className="g mb-3 tracking-form-heading">Track Order Form</h2>
-            <Tabs.Root defaultValue="mobile">
-              <Tabs.List
-                className="tracking-tabs flex gap-5 border-gray-200 mb-5"
-                aria-label="Tracking Types"
-              >
-                <Tabs.Trigger
-                  value="invoice"
-                  className="tracking-tab px-4 py-2 rounded-full focus:outline-none"
-                >
-                  Invoice No.
-                </Tabs.Trigger>
-                <Tabs.Trigger
-                  value="tracking"
-                  className="tracking-tab px-4 py-2 rounded-full focus:outline-none"
-                >
-                  Tracking No
-                </Tabs.Trigger>
-              </Tabs.List>
+        {/* form */}
+        <form onSubmit={handleSubmit}>
+          {activeTab === 'invoice' ? (
+            <input
+              type="text"
+              placeholder="Invoice Number"
+              className="tracking-input mb-6 block w-full bg-gray-100 rounded-xl px-5 py-3 text-lg text-gray-800 outline-none"
+              value={invoiceNumber}
+              onChange={(e) => setInvoiceNumber(e.target.value)}
+            />
+          ) : (
+            <input
+              type="text"
+              placeholder="Tracking Number"
+              className="tracking-input mb-6 block w-full bg-gray-100 rounded-xl px-5 py-3 text-lg text-gray-800 outline-none"
+              value={trackingNumber}
+              onChange={(e) => setTrackingNumber(e.target.value)}
+            />
+          )}
 
-              <Tabs.Content value="invoice" className="tracking-content">
-                <input
-                  type="text"
-                  placeholder="Invoice Number"
-                  className="tracking-input mb-6 block w-full bg-gray-100 rounded-xl px-5 py-3 text-lg text-gray-400 outline-none"
-                  value={invoiceNumber}
-                  onChange={(e) => setInvoiceNumber(e.target.value)}
-                />
-                <button
-                  className="tracking-otp-btn w-full text-white font-semibold text-lg py-3 flex items-center justify-center gap-2"
-                  onClick={handleInvoiceSubmit} // Open modal on button click
-                >
-                  Track your order <span role="img" aria-label="location"><MdOutlineLocationOn /></span>
-                </button>
-              </Tabs.Content>
+          <button
+            className="tracking-otp-btn w-full bg-black text-white font-semibold text-lg py-3 flex items-center justify-center gap-2 rounded-xl"
+            type="submit"
+          >
+            {loading ? 'Fetching…' : 'Track your order'} <MdOutlineLocationOn />
+          </button>
 
-              <Tabs.Content value="tracking" className="tracking-content">
-                <input
-                  type="text"
-                  placeholder="Tracking Number"
-                  className="tracking-input mb-6 block w-full bg-gray-100 rounded-xl px-5 py-3 text-lg text-gray-400 outline-none"
-                  value={trackingNumber}
-                  onChange={(e) => setTrackingNumber(e.target.value)}
-                />
-                <button
-                  className="tracking-otp-btn w-full text-white font-semibold text-lg py-3 flex items-center justify-center gap-2"
-                  onClick={handleTrackingSubmit} // Open modal on button click
-                >
-                  Track your order <span role="img" aria-label="location"><MdOutlineLocationOn /></span>
-                </button>
-                {!valid && <p className="text-red-500 text-sm">Please enter a valid tracking number (min 6 characters)</p>}
-              </Tabs.Content>
-            </Tabs.Root>
-          </div>
-        </Tabs.Content>
-      </Tabs.Root>
+          {!valid && (
+            <p className="text-red-500 text-sm mt-2">
+              Please enter a valid number (min 6 characters)
+            </p>
+          )}
+          {error && (
+            <p className="text-amber-600 text-sm mt-2">
+              {error}
+            </p>
+          )}
+        </form>
+      </div>
 
-      {/* Radix UI Modal */}
-      <Dialog.Root open={isModalOpen} onOpenChange={setModalOpen}>
-        <Dialog.Content className="hero-tracking-modal fixed inset-0 flex items-center justify-center bg-opacity-10">
-          <div className="modal-box bg-white rounded-lg p-6 shadow-lg max-w-3xl w-full">
-            <Dialog.Title className="hero-tracking-modal-heading text-xl font-semibold">Tracking Journey</Dialog.Title>
-            <Dialog.Description className=" text-gray-600">
-              Stay updated on your shipment progress
-            </Dialog.Description>
-
-            <div className="hero-modal-tracking-container mt-6 flex items-center justify-between relative">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between relative max-w-3xl w-full">
-                {/* Progress line (only for sm and up) */}
-                <div className="hidden sm:block absolute top-1/2 left-0 right-0 h-0.5 bg-gray-200 -z-10"></div>
-
-                {/* Step */}
-                <div className="flex sm:flex-col items-center sm:text-center mb-6 sm:mb-0 sm:w-1/5">
-                  <div className="flex items-center justify-center w-12 h-12 rounded-full bg-green-100 text-green-600">
-                    <Package size={22} />
-                  </div>
-                  <div className="ml-3 sm:ml-0 sm:mt-2">
-                    <p className="text-sm font-medium text-gray-900">Order Placed</p>
-                    <p className="text-xs text-gray-500">15 Sept 2025, 10:30 AM</p>
-                  </div>
-                </div>
-
-                <div className="flex sm:flex-col items-center sm:text-center mb-6 sm:mb-0 sm:w-1/5">
-                  <div className="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 text-blue-600">
-                    <Truck size={22} />
-                  </div>
-                  <div className="ml-3 sm:ml-0 sm:mt-2">
-                    <p className="text-sm font-medium text-gray-900">Shipped</p>
-                    <p className="text-xs text-gray-500">16 Sept 2025, 08:15 AM</p>
-                  </div>
-                </div>
-
-                <div className="flex sm:flex-col items-center sm:text-center mb-6 sm:mb-0 sm:w-1/5">
-                  <div className="flex items-center justify-center w-12 h-12 rounded-full bg-yellow-100 text-yellow-600">
-                    <MapPin size={22} />
-                  </div>
-                  <div className="ml-3 sm:ml-0 sm:mt-2">
-                    <p className="text-sm font-medium text-gray-900">In Transit</p>
-                    <p className="text-xs text-gray-500">17 Sept 2025, 05:40 PM</p>
-                  </div>
-                </div>
-
-                <div className="flex sm:flex-col items-center sm:text-center mb-6 sm:mb-0 sm:w-1/5">
-                  <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 text-gray-400">
-                    <Clock size={22} />
-                  </div>
-                  <div className="ml-3 sm:ml-0 sm:mt-2">
-                    <p className="text-sm font-medium text-gray-900">Out for Delivery</p>
-                    <p className="text-xs text-gray-500">Pending...</p>
-                  </div>
-                </div>
-
-                <div className="flex sm:flex-col items-center sm:text-center sm:w-1/5">
-                  <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 text-gray-400">
-                    <CheckCircle2 size={22} />
-                  </div>
-                  <div className="ml-3 sm:ml-0 sm:mt-2">
-                    <p className="text-sm font-medium text-gray-900">Delivered</p>
-                    <p className="text-xs text-gray-500">Awaiting update</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="hero-modal-tracking-btn flex justify-end gap-3 mt-4">
-              <Dialog.Close asChild>
-                <Button className='hero-modal-tracking-btns' color="danger" variant="light">Close</Button>
-              </Dialog.Close>
-            </div>
-          </div>
-        </Dialog.Content>
-      </Dialog.Root>
-
-    </div>
+      {/* modal */}
+      <TrackingModal
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        shipment={shipment}
+      />
+    </>
   );
-}
+};
+
+export default TrackingForm;

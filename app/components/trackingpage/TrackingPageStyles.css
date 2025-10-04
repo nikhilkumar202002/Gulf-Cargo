@@ -35,7 +35,7 @@
 }
 .about-content-page-description{
     font-size: 14px;
-    font-family: "Montserrat";
+    font-family: "Inter";
     font-weight: 500;
     color: rgb(230, 230, 230);
     line-height: 20px;
@@ -53,7 +53,7 @@
     color: var(--secondary-color) !important;
 }
 .about-content-left-description{
-    font-family: "Montserrat";
+    font-family: "Inter";
     font-size: 16px;
     font-weight: 550;
     color: #1e1e1e;
@@ -85,7 +85,7 @@
     color: var(--primary-color);
 }
 .track-form-sub-heading{
-    font-family: "Montserrat";
+    font-family: "Inter";
     font-size: 16px;
     font-weight: 500;
     color: #4c4c4c;
@@ -129,7 +129,7 @@
 }
 .track-form-data-sub-heading{
     font-size: 10px;
-    font-family: "Montserrat";
+    font-family: "Inter";
     font-weight: 400;
 }
 .track-form-mode-heading{

@@ -37,13 +37,15 @@ const Footer = () => {
               </div>
               <div className="footer-col">
                 <div className='footer-menu-heading'>Services</div>
-                 <ul>
-                      <li>Air Freight</li>
-                      <li>Sea Freight</li>
-                      <li>Road Freight</li>
-                      <li>Supply Chain Solutions</li>
-                      <li>Customs Clearance</li>
-                    </ul>
+                <ul className="space-y-2">
+  <li><Link href="/services#sea-freight">Sea Freight Services</Link></li>
+  <li><Link href="/services#air-freight">Air Freight Solutions</Link></li>
+  <li><Link href="/services#land-transportation">Land Transportation</Link></li>
+  <li><Link href="/services#warehouse-distribution">Warehousing & Distribution</Link></li>
+  <li><Link href="/services#customs-clearance-documentation">Customs Clearance & Documentation</Link></li>
+  <li><Link href="/services#project-logistics-solutions">Project Logistics Solutions</Link></li>
+  <li><Link href="/services#supply-chain-consulting">Supply Chain Consulting</Link></li>
+</ul>
               </div>
               <div className="footer-col">
                 <div className='footer-menu-heading'>Contact Information</div>

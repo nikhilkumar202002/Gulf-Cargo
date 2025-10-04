@@ -35,7 +35,7 @@
 }
 .about-content-page-description{
     font-size: 14px;
-    font-family: "Montserrat";
+    font-family: "Inter";
     font-weight: 500;
     color: rgb(230, 230, 230);
     line-height: 20px;
@@ -53,7 +53,7 @@
     color: var(--secondary-color) !important;
 }
 .about-content-left-description{
-    font-family: "Montserrat";
+    font-family: "Inter";
     font-size: 16px;
     font-weight: 550;
     color: #1e1e1e;
@@ -92,7 +92,7 @@
 .mission-description,.vision-description{
     font-size: 16px;
     font-weight: 500px;
-    font-family: "Montserrat";
+    font-family: "Inter";
     color: rgb(238, 238, 238);
 }
 .vision-container{

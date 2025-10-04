@@ -1,5 +1,6 @@
 import { Button } from '@radix-ui/themes'
 import React from 'react'
+import Link from 'next/link'
 import "./HomeStyles.css"
 
 const ctasection = () => {
@@ -10,7 +11,7 @@ const ctasection = () => {
                 <div className="cta-content">
                     <h1 className='cta-heading'>Ready to Ship With Confidence?</h1>
                     <p className='cta-description'>Partner with Gulf Cargo for fast, secure, and hassle-free deliveries across the GCC and beyond.</p>
-                    <Button>Contact Us Today</Button>
+                    <Link href="/support">Contact Us Today</Link>
                 </div>
             </div>
         </section>

@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "@radix-ui/themes/styles.css";
 @import "@fontsource/dm-sans";
-@import "@fontsource/montserrat";
 @import "@fontsource/inter";
 
 :root {

@@ -1,8 +1,7 @@
 "use client";
 import React from "react";
-import { Button } from "@radix-ui/themes";
-// ⬇️ import cubicBezier for typed easings
 import { motion, Variants, cubicBezier } from "framer-motion";
+import Link from "next/link";
 import "./HomeStyles.css";
 
 // Define typed easing functions
@@ -136,7 +135,7 @@ export default function About() {
                 transition={{ type: "spring", stiffness: 250, damping: 18 }}
               >
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                  <Button>More About Gulf Cargo</Button>
+                  <Link href="/company">More About Gulf Cargo</Link>
                 </motion.div>
               </motion.div>
             </div>

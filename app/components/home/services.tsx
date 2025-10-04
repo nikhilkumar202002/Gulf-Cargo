@@ -3,6 +3,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { servicesData } from "../data/servicesData";
 import "./HomeStyles.css";
+import { IoArrowForward } from "react-icons/io5";
 import Link from "next/link";
 
 const container = {
@@ -67,8 +68,8 @@ const Services = () => {
           </div>
 
           <div className="our-service-card-btn">
-            <Link className="our-service-card-btn" href="/services" target="_blank" rel="noopener noreferrer">
-              View More
+            <Link className="our-service-card-btn gap-2" href="/services" target="_blank" rel="noopener noreferrer">
+              View More <IoArrowForward/>
             </Link>
           </div>
         </div>

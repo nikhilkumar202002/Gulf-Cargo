@@ -3,6 +3,7 @@
   --secondary-color: #ED2624;
 }
 .hero-container{
+    position: relative;
     border-radius: 20px !important; 
     overflow: hidden !important;
     height: 650px;
@@ -12,14 +13,93 @@
     align-items: center;
     font-family: "Dm Sans";
 }
-.hero-container::before {
-   content: "";
-   position: absolute;
-   inset: 0;
-   background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0));
-   z-index: 1;
-   pointer-events: none;
+.hero-bg-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
 }
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  will-change: transform, opacity;
+  height: 100%;
+  width: 100%;
+}
+.hero-bg-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.25) 45%, rgba(0,0,0,0.0) 100%);
+}
+.hero-content-flex {
+  position: relative;
+  z-index: 1;
+  min-height: clamp(480px, 70vh, 760px);
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 32px;
+}
+@media (max-width: 900px) {
+  .hero-content-flex {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .hero-tracking-form { order: 2; }
+}
+
+/* Controls */
+.hero-controls {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+.hero-arrow {
+  pointer-events: all;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 40px;
+  width: 40px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(0,0,0,0.45);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.25);
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+  transition: background .2s ease, transform .2s ease;
+}
+.hero-arrow--left { left: 12px; }
+.hero-arrow--right { right: 12px; }
+.hero-arrow:hover { background: rgba(0,0,0,0.6); transform: translateY(-50%) scale(1.03); }
+
+/* Dots */
+.hero-dots {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: all;
+  display: flex;
+  gap: 8px;
+}
+.hero-dot {
+  height: 8px;
+  width: 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.45);
+  border: 1px solid rgba(255,255,255,0.35);
+  cursor: pointer;
+  transition: all .2s ease;
+}
+.hero-dot.is-active {
+  width: 20px;
+  background: #fff;
+}
+
 .hero-content,.hero-tracking-form{
      position: relative; /* Needed for z-index to apply */
   z-index: 4;
@@ -33,13 +113,13 @@
     font-size: 16px;
     color: #E7E7E7;
     font-weight: 400;
-    font-family: "Montserrat";
+    font-family: "Inter";
     line-height: 22px;
 }
 .hero-content-btns{
     padding-top: 40px;
 }
-.hero-content-btns button{
+.hero-content-btns a{
     background-color: var(--secondary-color);
     padding: 10px 32px;
     font-size: 17px;
@@ -47,7 +127,7 @@
     border-radius: 10px;
     color: white;
 }
-.hero-content-btns button:hover{
+.hero-content-btns a:hover{
     background-color: var(--primary-color);
     color: white;
     transition: 4ms;
@@ -87,7 +167,7 @@
         font-size: 12px;
         font-weight: 500;
         color: #414141;
-        font-family: "Montserrat";
+        font-family: "Inter";
     }
 }
 .hero-second-icon{
@@ -113,7 +193,7 @@
         font-size: 16px;
         font-weight: 500;
         color: #565656;
-        font-family: "Montserrat";
+        font-family: "Inter";
     }
 }
 .our-service{
@@ -139,7 +219,7 @@
     }
 }
 .our-service-card-descrption p{
-    font-family: "Montserrat";
+    font-family: "Inter";
     font-size: 16px;
     font-weight: 500;
     color: #787878;
@@ -158,6 +238,9 @@
     border-radius: 7px;
     color: white;
     font-family: "Dm Sans";   
+}
+.our-service-card-btn a:hover{
+    background-color: var(--secondary-color);
 }
 .our-service-card{
     padding: 40px;
@@ -180,6 +263,9 @@
   text-align: center;
 }
 
+.about-content-counters{
+    padding-bottom: 40px;
+}
 .about-video video {
   width: 100%;
   height: 600px;
@@ -194,7 +280,7 @@
 }
 .about-content-description{
     font-size: 16px;
-    font-family: "Montserrat";
+    font-family: "Inter";
     color: #565656;
     padding-top: 15px 0px;
 }
@@ -206,11 +292,11 @@
 }
 .about-counter-heading{
     font-size: 16px;
-    font-family: "Montserrat";
+    font-family: "Inter";
     font-weight: 500;
     color: #565656;
 }
-.about-cta button{
+.about-cta a{
     padding: 12px 32px;
     background-color: var(--secondary-color);
     border-radius: 10px;
@@ -218,7 +304,7 @@
     font-size: 16px;
     color: white;
     font-weight: 600;
-    margin-top: 40px;
+    margin-top: 40px !important;
 }
 
 /* Testimonial Styles */
@@ -238,7 +324,7 @@
 }
 .testimonial-description{
     font-size: 16px;
-    font-family: "Montserrat";
+    font-family: "Inter";
     width: 40%;
     color: #5a5a5a;
     line-height: 22px;
@@ -262,7 +348,7 @@
 }
 .testimonial-content p{
     font-size: 17px;
-    font-family: "Montserrat";
+    font-family: "Inter";
     color: #1e1e1e;
     font-weight: 500;
 }
@@ -325,13 +411,13 @@
     color: white;
 }
 .cta-description{
-    font-family: "Montserrat";
+    font-family: "Inter";
     font-size: 17px;
     color: white;
     font-weight: 500;
     width: 50%;
 }
-.cta-content button{
+.cta-content a{
     background-color: var(--secondary-color);
     padding: 12px 32px;
     color: white;
@@ -360,7 +446,7 @@
 }
 .contact-description{
     font-size: 17px;
-    font-family: "Montserrat";
+    font-family: "Inter";
     font-weight: 500;
     color: #3c3c3c;
 }
@@ -378,7 +464,7 @@
 .contact-lists{
     font-size: 17px;
     font-weight: 600;
-    font-family: "Montserrat";
+    font-family: "Inter";
 }
 .contact-icon-list{
     padding-top: 30px;

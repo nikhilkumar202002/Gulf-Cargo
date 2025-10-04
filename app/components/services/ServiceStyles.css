@@ -37,7 +37,7 @@
 }
 .service-banner-content-description{
     font-size: 14px;
-    font-family: "Montserrat";
+    font-family: "Inter";
     font-weight: 500;
     color: rgb(230, 230, 230);
     line-height: 20px;
@@ -90,7 +90,7 @@
 }
 .allservices-list li{
     font-size: 16px;
-    font-family: "Montserrat";
+    font-family: "Inter";
     font-weight: 500;
     color: var(--text);
 }
@@ -142,7 +142,7 @@
 }
 .service-industries-grid-description{
     font-size: 16px;
-    font-family: "Montserrat";
+    font-family: "Inter";
     font-weight: 500;
     color: rgb(169, 169, 169);
     padding-top: 10px;
@@ -160,7 +160,7 @@
 .whychoooseus-point-list-description{
     font-size: 16px;
     font-weight: 500;
-    font-family: "Montserrat";
+    font-family: "Inter";
     color: var(--text);
 }
 .whychooseus-content-heading{
@@ -175,7 +175,7 @@
 .whychooseus-content-description{
     font-size: 16px;
     font-weight: 500;
-    font-family: "Montserrat";
+    font-family: "Inter";
     color: var(--text);
     padding-top: 10px
 }

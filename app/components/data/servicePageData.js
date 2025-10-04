@@ -3,6 +3,7 @@ const services = [
   {
     id: 1,
     highlight: "Sea Freight",
+    anchor: "sea-freight",
     title: "Services",
     subtitle: "Reliable Ocean Transportation for Global Trade",
     image: "/Images/Sea-Freight-Services.webp",
@@ -20,6 +21,7 @@ const services = [
   {
     id: 2,
     highlight: "Air Freight",
+    anchor: "air-freight",
     title: "Solutions",
     subtitle: "Express Air Cargo for Time-Critical Shipments",
     image: "/Images/Air-Freight-Solutions.webp",
@@ -36,6 +38,7 @@ const services = [
   },
   {
     id: 3,
+    anchor: "land-transportation",
     highlight: "Land",
     title: "Transportation",
     subtitle: "Comprehensive Road Transport Across the Gulf",
@@ -53,6 +56,7 @@ const services = [
   },
   {
     id: 4,
+    anchor: "warehouse-distribution",
     highlight: "Warehousing &",
     title: "Distribution",
     subtitle: "Strategic Storage and Fulfillment Solutions",
@@ -70,6 +74,7 @@ const services = [
   },
   {
     id: 5,
+    anchor: "customs-clearance-documentation",
     highlight: "Customs",
     title: "Clearance & Documentation",
     subtitle: "Expert Customs Brokerage Services",
@@ -87,6 +92,7 @@ const services = [
   },
   {
     id: 6,
+    anchor: "project-logistics-solutions",
     highlight: "Project Logistics",
     title: "Solutions",
     subtitle: "Specialized Solutions for Complex Projects",
@@ -104,6 +110,7 @@ const services = [
   },
   {
     id: 7,
+    anchor: "supply-chain-consulting",
     highlight: "Supply Chain",
     title: "Consulting",
     subtitle: "Strategic Logistics Optimization",

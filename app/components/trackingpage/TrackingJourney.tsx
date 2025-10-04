@@ -1,18 +1,19 @@
-'use client'
+'use client';
 
-import { useMemo, useState } from "react";
-import { FiSearch, FiPackage, FiTruck, FiMapPin, FiCheckCircle } from "react-icons/fi";
-import { fetchTrackingData } from "../../api/trackingApi"; // Ensure this import path is correct
-import "./TrackingPageStyles.css";
+import React, { useEffect, useMemo, useState } from 'react';
+import { FiSearch, FiPackage, FiTruck, FiMapPin, FiCheckCircle } from 'react-icons/fi';
+import type { IconType } from 'react-icons';
+import { fetchTrackingData } from '../../api/trackingApi';
+import './TrackingPageStyles.css';
 
-// Types
-type Mode = "tracking";  // Only tracking mode now
+/* ------------------------------- Types ---------------------------------- */
+type Mode = 'tracking';
 
 interface Stage {
-  key: "booked" | "in_transit" | "arrival" | "out_for_delivery" | "delivered";
+  key: 'booked' | 'in_transit' | 'arrival' | 'out_for_delivery' | 'delivered';
   title: string;
   alt: string;
-  icon: React.ComponentType;
+  icon: IconType;
 }
 
 type TrackResponse = {
@@ -30,66 +31,51 @@ type TrackResponse = {
   [k: string]: unknown;
 };
 
+/* ------------------------------ UI Copy --------------------------------- */
 const STAGES: Stage[] = [
-  { key: "booked", title: "Shipment Booked", alt: "Received/Pending", icon: FiPackage },
-  { key: "in_transit", title: "In Transit", alt: "Forwarded/Transfer", icon: FiTruck },
-  { key: "arrival", title: "Arrival & Clearance", alt: "Arrived/Clearing", icon: FiMapPin },
-  { key: "out_for_delivery", title: "Out for Delivery", alt: "Delivery Arranged", icon: FiTruck },
-  { key: "delivered", title: "Delivered", alt: "Complete", icon: FiCheckCircle },
-] as const;
+  { key: 'booked',            title: 'Shipment Booked',        alt: 'Received/Pending',   icon: FiPackage },
+  { key: 'in_transit',        title: 'In Transit',             alt: 'Forwarded/Transfer', icon: FiTruck   },
+  { key: 'arrival',           title: 'Arrival & Clearance',    alt: 'Arrived/Clearing',   icon: FiMapPin  },
+  { key: 'out_for_delivery',  title: 'Out for Delivery',       alt: 'Delivery Arranged',  icon: FiTruck   },
+  { key: 'delivered',         title: 'Delivered',              alt: 'Complete',           icon: FiCheckCircle },
+];
 
 const placeholders: Record<Mode, string> = {
-  tracking: "Enter tracking number or Invoice Number",
+  tracking: 'Enter tracking number or Invoice Number',
 };
 
 const labelCopy: Record<Mode, string> = {
-  tracking: "Track by Tracking Number",
+  tracking: 'Track by Tracking Number',
 };
 
-// Status Mapping
+/* ----------------------- Status → Stage Mapping ------------------------- */
 const STATUS_ID_TO_STAGE: Record<number, number> = {
-  1: 0, // Shipment received
-  2: 0, // Shipment booked
-  11: 0, // Pending
-  13: 0, // Enquiry collected
-  3: 1, // Shipment forwarded
-  12: 1, // More Tracking
-  14: 1, // Transfer
-  4: 2, // Shipment arrived
-  5: 2, // Waiting for clearance
-  6: 2, // Shipment on hold (exception)
-  7: 2, // Shipment cleared
-  8: 3, // Delivery arranged
-  9: 3, // Shipment out for delivery
-  10: 3, // Not Delivered (exception/failed last-mile)
+  // Booking-side
+  1: 0, 2: 0, 11: 0, 13: 0,
+  // In-transit
+  3: 1, 12: 1, 14: 1,
+  // Arrival/Clearance
+  4: 2, 5: 2, 6: 2, 7: 2,
+  // Out for delivery
+  8: 3, 9: 3, 10: 3,
+  // Delivered -> 4 (handled via names / fallback)
 };
 
 const STATUS_NAME_TO_STAGE: Record<string, number> = {
-  "shipment received": 0,
-  "shipment booked": 0,
-  "pending": 0,
-  "enquiry collected": 0,
-  "shipment forwarded": 1,
-  "more tracking": 1,
-  "transfer": 1,
-  "shipment arrived": 2,
-  "waiting for clearance": 2,
-  "shipment on hold": 2,
-  "shipment cleared": 2,
-  "delivery arranged": 3,
-  "shipment out for delivery": 3,
-  "not delivered": 3,
-  "delivered": 4,
+  'shipment received': 0, 'shipment booked': 0, 'pending': 0, 'enquiry collected': 0,
+  'shipment forwarded': 1, 'more tracking': 1, 'transfer': 1,
+  'shipment arrived': 2, 'waiting for clearance': 2, 'shipment on hold': 2, 'shipment cleared': 2,
+  'delivery arranged': 3, 'shipment out for delivery': 3, 'not delivered': 3,
+  'delivered': 4,
 };
 
-const EXCEPTION_NAMES = new Set(["shipment on hold", "not delivered"]);
+const EXCEPTION_NAMES = new Set(['shipment on hold', 'not delivered']);
 
-// Derive Stage
 function deriveStageFromApi(payload?: TrackResponse) {
-  const detail = (payload?.status_name || payload?.status || "").trim();
+  const detail = (payload?.status_name || payload?.status || '').trim();
   let exception = false;
 
-  if (typeof payload?.status_id === "number") {
+  if (typeof payload?.status_id === 'number') {
     const idx = STATUS_ID_TO_STAGE[payload.status_id];
     if (idx !== undefined) {
       if (detail && EXCEPTION_NAMES.has(detail.toLowerCase())) exception = true;
@@ -112,23 +98,48 @@ function deriveStageFromApi(payload?: TrackResponse) {
   return { index: 0, exception, detail };
 }
 
-// Component
-export default function TrackingJourney() {
-  const [mode, setMode] = useState<Mode>("tracking"); // Only tracking mode now
-  const [q, setQ] = useState("");
+/* ------------------------- Public Component API ------------------------- */
+type TrackingJourneyProps = {
+  /** Seed the input on mount (e.g., from dialog) */
+  initialQuery?: string;
+  /** If true, auto run fetch on mount with `initialQuery` */
+  autoFetch?: boolean;
+};
+
+const TrackingJourney: React.FC<TrackingJourneyProps> = ({ initialQuery, autoFetch }) => {
+  const [mode] = useState<Mode>('tracking');
+  const [q, setQ] = useState(initialQuery ?? '');
   const [touched, setTouched] = useState(false);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<TrackResponse | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
   const valid = useMemo(() => {
-    if (!touched && q === "") return false;
-    return /^[A-Za-z0-9-]{6,}$/.test(q.trim()); // Validates tracking number format
+    if (!touched && q === '') return false;
+    return /^[A-Za-z0-9-]{6,}$/.test(q.trim());
   }, [q, touched]);
 
   const stageInfo = useMemo(() => deriveStageFromApi(data || undefined), [data]);
   const currentIndex = data ? stageInfo.index : -1;
-  const etaDays = useMemo(() => (currentIndex >= 0 ? Math.max(0, 4 - currentIndex) : 0), [currentIndex]);
+
+  useEffect(() => {
+    if (!initialQuery || !autoFetch) return;
+    setTouched(true);
+    (async () => {
+      setErr(null);
+      setData(null);
+      setLoading(true);
+      try {
+        const json = await fetchTrackingData(initialQuery.trim());
+        setData(json);
+      } catch (e: unknown) {
+        const msg = e instanceof Error ? e.message : typeof e === 'string' ? e : JSON.stringify(e);
+        setErr(msg || 'Failed to fetch');
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [initialQuery, autoFetch]);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -140,35 +151,35 @@ export default function TrackingJourney() {
     setLoading(true);
 
     try {
-      const json = await fetchTrackingData(q.trim()); // Fetch data using tracking number
+      const json = await fetchTrackingData(q.trim());
       setData(json);
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : typeof e === "string" ? e : JSON.stringify(e);
-      setErr(msg || "Failed to fetch");
+      const msg = e instanceof Error ? e.message : typeof e === 'string' ? e : JSON.stringify(e);
+      setErr(msg || 'Failed to fetch');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <section className="min-h-[80dvh] bg-transparent text-black">
-      <div className="heroGradient relative isolate"></div>
-      <div className="container mx-auto px-4 py-10 lg:py-14">
-        <div className="mx-auto w-full max-w-5xl rounded-3xl border border-neutral-200 bg-white">
+    <section className="min-h-[40dvh] bg-transparent text-black">
+      <div className="container mx-auto px-0 py-0">
+        <div className="w-full rounded-2xl border border-neutral-200 bg-white">
           {/* Header */}
-          <div className="flex flex-col gap-3 border-b border-neutral-200 p-6 sm:flex-row sm:items-end sm:justify-between lg:p-8">
+          <div className="flex flex-col gap-3 border-b border-neutral-200 p-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h1 className="track-form-heading text-2xl tracking-tight sm:text-3xl">Track Your Shipment</h1>
-              <p className="track-form-sub-heading mt-1 text-sm text-black">Real-time milestone view from booking to delivery.</p>
+              <h1 className="track-form-heading text-xl tracking-tight sm:text-2xl">Track Your Shipment</h1>
+              <p className="track-form-sub-heading mt-1 text-xs sm:text-sm text-black">
+                Real-time milestone view from booking to delivery.
+              </p>
             </div>
             <div className="track-form-status-head flex items-center gap-2 text-xs text-black">
-              <div className="h-2 w-2 animate-pulse rounded-full bg-emerald-400"></div>
-              Live status
+              <div className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" /> Live status
             </div>
           </div>
 
           {/* Form */}
-          <form onSubmit={onSubmit} className="grid gap-5 p-6 lg:p-8">
+          <form onSubmit={onSubmit} className="grid gap-4 p-4">
             <div className="flex flex-col gap-3 sm:flex-row">
               <label className="sr-only" htmlFor="track-input">{labelCopy[mode]}</label>
               <input
@@ -180,18 +191,19 @@ export default function TrackingJourney() {
                 inputMode="text"
                 className="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 text-base outline-none transition placeholder:text-neutral-500 focus:border-neutral-400 focus:bg-white focus:shadow-[0_0_0_3px_rgba(59,130,246,0.25)]"
               />
-              <button type="submit" className="track-form-btn" disabled={loading}>
+              <button type="submit" className="track-form-btn inline-flex items-center gap-2 rounded-xl bg-black text-white px-4 py-3 disabled:opacity-60" disabled={loading}>
                 <FiSearch size={16} className="shrink-0" />
-                {loading ? " Checking…" : " Track"}
+                {loading ? ' Checking…' : ' Track'}
               </button>
             </div>
+
             {touched && !valid && (
-              <p className="text-sm text-red-400 track-form-validation">
-                Enter a valid tracking number (min 6 chars).
-              </p>
+              <p className="text-sm text-red-500 track-form-validation">Enter a valid tracking number (min 6 chars).</p>
             )}
             {loading && <p className="text-sm text-neutral-600">Checking status…</p>}
             {err && <p className="text-sm text-red-600">{err}</p>}
+
+            {/* Identifiers */}
             {data && (
               <div className="rounded-xl border border-neutral-200 bg-white p-4 text-sm">
                 <div className="flex flex-wrap items-center gap-2">
@@ -211,55 +223,48 @@ export default function TrackingJourney() {
                 </div>
               </div>
             )}
+
             {/* Stages */}
-   <div className="mt-1 rounded-2xl border border-neutral-200 bg-neutral-50 p-5">
-  {/* Desktop and Mobile responsive design */}
-  <div className="lg:block sm:flex sm:flex-col">
-    {/* For Mobile: Vertical Progress Bar (stacked) */}
-    <ol className="relative mx-auto sm:flex sm:flex-col sm:w-full lg:grid lg:grid-cols-5 gap-0">
-      {STAGES.map((s, i) => {
-        const Icon = s.icon;
-        const reached = i <= currentIndex && currentIndex >= 0;
-        const isCurrent = i === currentIndex && currentIndex >= 0;
-        return (
-          <li key={s.key} className="track-list-flex relative flex sm:flex-col items-center text-center sm:w-full lg:w-auto">
-            {/* Progress line for mobile (vertical) */}
-            {i !== 0 && (
-              <div className={[
-                "absolute left-0 right-0 top-4 h-1",
-                i <= currentIndex && currentIndex >= 0 ? "progressBarActive" : "progressBar"
-              ].join(" ")} />
-            )}
+            <div className="mt-1 rounded-2xl border border-neutral-200 bg-neutral-50 p-5">
+              <ol className="relative mx-auto sm:flex sm:flex-col sm:w-full lg:grid lg:grid-cols-5 gap-0">
+                {STAGES.map((s, i) => {
+                  const Icon = s.icon;
+                  const reached = i <= currentIndex && currentIndex >= 0;
+                  const isCurrent = i === currentIndex && currentIndex >= 0;
 
-            {/* Icon for tracking stages */}
-            <div className="relative z-10 flex h-8 w-8 items-center justify-center">
-              <div className={[ "absolute inset-0 rounded-full", reached ? "nodeGlow" : "bg-neutral-200" ].join(" ")} />
-              <Icon size={20} className={reached ? "text-black" : "text-neutral-400"} />
+                  return (
+                    <li key={s.key} className="track-list-flex relative flex sm:flex-col items-center text-center sm:w-full lg:w-auto">
+                      {i !== 0 && (
+                        <div
+                          className={[
+                            'absolute left-0 right-0 top-4 h-1',
+                            i <= currentIndex && currentIndex >= 0 ? 'progressBarActive' : 'progressBar',
+                          ].join(' ')}
+                        />
+                      )}
+                      <div className="relative z-10 flex h-8 w-8 items-center justify-center">
+                        <div className={['absolute inset-0 rounded-full', reached ? 'nodeGlow' : 'bg-neutral-200'].join(' ')} />
+                        <Icon size={20} className={reached ? 'text-black' : 'text-neutral-400'} />
+                      </div>
+                      <div className="track-title-description text-xs font-medium text-black">
+                        <h2 className="track-form-data-heading">{s.title}</h2>
+                        <p className="track-form-data-sub-heading">{s.alt}</p>
+                      </div>
+                      {isCurrent && (
+                        <div className="mt-2 rounded-full bg-emerald-500/10 px-3 py-1 text-[10px] font-semibold text-emerald-600">
+                          In progress
+                        </div>
+                      )}
+                    </li>
+                  );
+                })}
+              </ol>
             </div>
-
-            {/* Title and description */}
-            <div className="track-title-description text-xs font-medium text-black">
-              <h2 className="track-form-data-heading">{s.title}</h2>
-                <p className="track-form-data-sub-heading">{s.alt}</p>
-              </div>
-           
-            {/* If the stage is current, show "In progress" label */}
-            {isCurrent && (
-              <div className="mt-2 rounded-full bg-emerald-500/10 px-3 py-1 text-[10px] font-semibold text-emerald-300">
-                In progress
-              </div>
-            )}
-          </li>
-        );
-      })}
-    </ol>
-  </div>
-</div>
-
-
           </form>
         </div>
       </div>
     </section>
   );
-}
+};
+
+export default TrackingJourney;
