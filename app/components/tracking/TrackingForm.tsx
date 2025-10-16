@@ -1,48 +1,60 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { MdOutlineLocationOn } from 'react-icons/md';
 import './TrackfromStyles.css';
 import TrackingModal, { TrackingModalShipment } from './TrackingModal';
-import { fetchTrackingData } from '../../api/trackingApi';
+import { fetchTrackingData, fetchTrackingByInvoice } from '../../api/trackingApi';
 
-type Tab = 'invoice' | 'tracking';
+/** Helpers: endpoint routing ********************************************************/
 
-const statusKeyOrder = ['booked','in_transit','arrival','out_for_delivery','delivered'] as const;
-type StageKey = typeof statusKeyOrder[number];
+// Pure 6-digit bill/invoice number (e.g., "123456") → /tracks
+const isSixDigitBillNo = (v: string) => /^\d{6}$/.test(v.trim());
 
-function norm(s?: string) {
-  return (s || '').toString().trim().toLowerCase().replace(/\s+/g, '_');
-}
+// Invoice patterns: "INV-2025-3109", "INV/2025-3109" → /tracks
+const isInvoicePattern = (v: string) => /^INV[-/][A-Za-z0-9-]+$/i.test(v.trim());
+
+// Any value that should go to the /tracks endpoint
+const isInvoiceQuery = (v: string) => isSixDigitBillNo(v) || isInvoicePattern(v);
+
+// Accept tracking codes like "RD:200005", "RUH81-5" (and general alnum with - / :)
+const isValidCodeInput = (v: string) => /^[A-Za-z0-9\-/:]{6,}$/i.test(v.trim());
+
+/** Map API status → stage index (0..4) *********************************************/
+const STATUS_ID_TO_STAGE: Record<number, number> = {
+  1: 0, 2: 0, 11: 0, 13: 0,
+  3: 1, 12: 1, 14: 1,
+  4: 2, 5: 2, 6: 2, 7: 2,
+  8: 3, 9: 3, 10: 3,
+};
+
+const STATUS_NAME_TO_STAGE: Record<string, number> = {
+  'shipment received': 0, 'shipment booked': 0, 'pending': 0, 'enquiry collected': 0,
+  'shipment forwarded': 1, 'more tracking': 1, 'transfer': 1,
+  'shipment arrived': 2, 'waiting for clearance': 2, 'shipment on hold': 2, 'shipment cleared': 2,
+  'delivery arranged': 3, 'shipment out for delivery': 3, 'not delivered': 3,
+  'delivered': 4,
+};
 
 function mapStatusToIndex(statusName?: string, statusId?: number): number {
-  const n = norm(statusName);
-  // Common aliases
-  const alias: Record<string, StageKey> = {
-    received: 'booked',
-    pending: 'booked',
-    forwarded: 'in_transit',
-    transfer: 'in_transit',
-    arrived: 'arrival',
-    clearing: 'arrival',
-    customs: 'arrival',
-    'out_for_delivery': 'out_for_delivery',
-    delivered: 'delivered',
-    complete: 'delivered',
-  };
-
-  if (n && alias[n]) return statusKeyOrder.indexOf(alias[n]);
-  if (n && statusKeyOrder.includes(n as StageKey)) {
-    return statusKeyOrder.indexOf(n as StageKey);
+  const name = (statusName || '').trim().toLowerCase();
+  if (typeof statusId === 'number' && STATUS_ID_TO_STAGE[statusId] !== undefined) {
+    return STATUS_ID_TO_STAGE[statusId];
   }
-
-  // Fallback by id if your API uses ascending stage ids
-  if (typeof statusId === 'number') {
-    // Clamp 0..4
-    return Math.max(0, Math.min(4, statusId));
+  if (name && STATUS_NAME_TO_STAGE[name] !== undefined) {
+    return STATUS_NAME_TO_STAGE[name];
   }
-  return -1; // unknown → show neutral UI
+  if (/deliver/i.test(name)) return /not/i.test(name) ? 3 : 4;
+  if (/out/i.test(name)) return 3;
+  if (/arriv|dest|clear/i.test(name)) return 2;
+  if (/transit|forward|transfer/i.test(name)) return 1;
+  if (/book|receiv|enquiry|pending/i.test(name)) return 0;
+  return 0; // default to first stage
 }
+
+/** Component ****************************************************************************/
+
+type Tab = 'invoice' | 'tracking';
 
 const TrackingForm: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>('tracking');
@@ -51,37 +63,33 @@ const TrackingForm: React.FC = () => {
   const [valid, setValid] = useState(true);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [seedQuery, setSeedQuery] = useState<string>('');
   const [loading, setLoading] = useState(false);
-  const [shipment, setShipment] = useState<TrackingModalShipment | undefined>(undefined);
   const [error, setError] = useState<string | undefined>(undefined);
-
-  // keep body lock (redundant with modal but harmless)
-  useEffect(() => {
-    document.body.style.overflow = isModalOpen ? 'hidden' : '';
-  }, [isModalOpen]);
+  const [shipment, setShipment] = useState<TrackingModalShipment | undefined>(undefined);
 
   const openWith = async (val: string) => {
-    if (!val || val.trim().length < 6) {
+    if (!val || !isValidCodeInput(val)) {
       setValid(false);
       return;
     }
     setValid(true);
+
     const code = val.trim();
 
-    // Open modal in skeleton state
+    // Prep modal
     setShipment(undefined);
     setError(undefined);
-    setSeedQuery(code);
     setIsModalOpen(true);
     setLoading(true);
 
     try {
-      const data = await fetchTrackingData(code);
-      // Expecting fields (any subset): tracking_code/tracking_no, status_name/status, status_id,
-      // method, origin, origin_port, destination, destination_port, updated_at, exception
+      // Route to the right endpoint
+      const data = isInvoiceQuery(code)
+        ? await fetchTrackingByInvoice(code)      // /tracks/{invoiceNo or 6-digit}
+        : await fetchTrackingData(code);          // /track/{trackingCode}
+
       const trackingCode =
-        data?.tracking_code || data?.tracking_no || data?.trackingNo || code;
+        data?.tracking_code || data?.tracking_no || data?.trackingNo || data?.invoice_no || code;
 
       const statusName = data?.status_name || data?.status || '';
       const statusId   = typeof data?.status_id === 'number' ? data?.status_id : undefined;
@@ -91,25 +99,20 @@ const TrackingForm: React.FC = () => {
         method: data?.method || data?.shipment_method || data?.mode || undefined,
         statusName: statusName || undefined,
         statusId,
+        status: data?.status || undefined,
         origin: data?.origin || undefined,
         originPort: data?.origin_port || undefined,
         destination: data?.destination || undefined,
         destinationPort: data?.destination_port || undefined,
-        updatedAt: data?.updated_at || data?.updatedAt || undefined,
+        updatedAt: data?.updated_at || undefined,
         exceptionNote: data?.exception || data?.hold_reason || undefined,
         currentIndex: mapStatusToIndex(statusName, statusId),
       };
 
       setShipment(mapped);
-    } catch (e: any) {
-      setError(e?.message || 'Failed to fetch tracking data');
-      // keep modal open; show error inside summary card via exceptionNote
-      setShipment({
-        trackingCode: code,
-        statusName: 'Not Found',
-        exceptionNote: e?.message || 'No record found for this code.',
-        currentIndex: -1,
-      });
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : typeof e === 'string' ? e : JSON.stringify(e);
+      setError(msg || 'Failed to fetch');
     } finally {
       setLoading(false);
     }
@@ -126,36 +129,30 @@ const TrackingForm: React.FC = () => {
       <div className="tracking-form-box w-full max-w-md bg-white shadow-lg p-8 mx-auto relative rounded-2xl">
         <h2 className="mb-4 tracking-form-heading text-xl font-semibold">Track Order Form</h2>
 
-        {/* tabs */}
-        <div className="mb-5 flex gap-3">
+        {/* Tabs */}
+        <div className="mb-6 flex rounded-xl overflow-hidden border border-neutral-200">
           <button
             type="button"
-            onClick={() => setActiveTab('invoice')}
-            className={[
-              'px-4 py-2 rounded-full border',
-              activeTab === 'invoice' ? 'bg-black text-white border-black' : 'bg-gray-100 text-gray-800 border-gray-200'
-            ].join(' ')}
+            className={`flex-1 px-4 py-2 text-sm ${activeTab === 'tracking' ? 'bg-black text-white' : 'bg-white text-black'}`}
+            onClick={() => setActiveTab('tracking')}
           >
-            Invoice No.
+            Tracking No.
           </button>
           <button
             type="button"
-            onClick={() => setActiveTab('tracking')}
-            className={[
-              'px-4 py-2 rounded-full border',
-              activeTab === 'tracking' ? 'bg-black text-white border-black' : 'bg-gray-100 text-gray-800 border-gray-200'
-            ].join(' ')}
+            className={`flex-1 px-4 py-2 text-sm ${activeTab === 'invoice' ? 'bg-black text-white' : 'bg-white text-black'}`}
+            onClick={() => setActiveTab('invoice')}
           >
-            Tracking No
+            Invoice / Bill
           </button>
         </div>
 
-        {/* form */}
+        {/* Form */}
         <form onSubmit={handleSubmit}>
           {activeTab === 'invoice' ? (
             <input
               type="text"
-              placeholder="Invoice Number"
+              placeholder="Invoice Number (INV-xxxx-xxxx) or 6-digit bill no."
               className="tracking-input mb-6 block w-full bg-gray-100 rounded-xl px-5 py-3 text-lg text-gray-800 outline-none"
               value={invoiceNumber}
               onChange={(e) => setInvoiceNumber(e.target.value)}
@@ -163,37 +160,40 @@ const TrackingForm: React.FC = () => {
           ) : (
             <input
               type="text"
-              placeholder="Tracking Number"
+              placeholder="Tracking Number (e.g., RD:200005, RUH81-5)"
               className="tracking-input mb-6 block w-full bg-gray-100 rounded-xl px-5 py-3 text-lg text-gray-800 outline-none"
               value={trackingNumber}
               onChange={(e) => setTrackingNumber(e.target.value)}
             />
           )}
 
-          <button
-            className="tracking-otp-btn w-full bg-black text-white font-semibold text-lg py-3 flex items-center justify-center gap-2 rounded-xl"
-            type="submit"
-          >
-            {loading ? 'Fetching…' : 'Track your order'} <MdOutlineLocationOn />
-          </button>
-
           {!valid && (
-            <p className="text-red-500 text-sm mt-2">
-              Please enter a valid number (min 6 characters)
-            </p>
+            <div className="mb-4 text-sm text-red-600">
+              Enter a valid code (min 6 chars). Allowed: letters, numbers, <code>-</code>, <code>/</code>, <code>:</code>
+            </div>
           )}
-          {error && (
-            <p className="text-amber-600 text-sm mt-2">
-              {error}
-            </p>
-          )}
+
+          <button
+            type="submit"
+            className="tracking-submit-btn w-full bg-black text-white rounded-xl py-3 text-base font-semibold disabled:opacity-60"
+          >
+            Track Now
+          </button>
         </form>
+
+        {/* Footer hint */}
+        <div className="mt-6 flex items-center gap-2 text-xs text-neutral-600">
+          <MdOutlineLocationOn size={16} />
+          Live milestone view from booking to delivery
+        </div>
       </div>
 
-      {/* modal */}
+      {/* Modal */}
       <TrackingModal
         open={isModalOpen}
-        onOpenChange={setIsModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        loading={loading}
+        error={error}
         shipment={shipment}
       />
     </>

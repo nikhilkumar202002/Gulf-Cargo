@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { FiSearch, FiPackage, FiTruck, FiMapPin, FiCheckCircle } from 'react-icons/fi';
 import type { IconType } from 'react-icons';
-import { fetchTrackingData } from '../../api/trackingApi';
+import { fetchTrackingData, fetchTrackingByInvoice } from '../../api/trackingApi'; // <-- added import
 import './TrackingPageStyles.css';
 
 /* ------------------------------- Types ---------------------------------- */
@@ -17,6 +17,7 @@ interface Stage {
 }
 
 type TrackResponse = {
+  // generic tracking fields (existing)
   tracking_code?: string;
   tracking_no?: string;
   status_name?: string;
@@ -28,6 +29,12 @@ type TrackResponse = {
   destination?: string;
   destination_port?: string;
   updated_at?: string;
+
+  // invoice-specific fields (NEW)
+  success?: boolean;
+  invoice_no?: string;
+  shipment_method?: string;
+  // the invoice endpoint returns "status" as the human label already
   [k: string]: unknown;
 };
 
@@ -45,20 +52,15 @@ const placeholders: Record<Mode, string> = {
 };
 
 const labelCopy: Record<Mode, string> = {
-  tracking: 'Track by Tracking Number',
+  tracking: 'Track by Tracking Number or Invoice',
 };
 
 /* ----------------------- Status → Stage Mapping ------------------------- */
 const STATUS_ID_TO_STAGE: Record<number, number> = {
-  // Booking-side
   1: 0, 2: 0, 11: 0, 13: 0,
-  // In-transit
   3: 1, 12: 1, 14: 1,
-  // Arrival/Clearance
   4: 2, 5: 2, 6: 2, 7: 2,
-  // Out for delivery
   8: 3, 9: 3, 10: 3,
-  // Delivered -> 4 (handled via names / fallback)
 };
 
 const STATUS_NAME_TO_STAGE: Record<string, number> = {
@@ -98,11 +100,26 @@ function deriveStageFromApi(payload?: TrackResponse) {
   return { index: 0, exception, detail };
 }
 
+/* --------------------------- Helpers (NEW) ------------------------------- */
+const isSixDigitBillNo = (v: string) => /^\d{6}$/.test(v.trim());
+
+const isInvoiceQuery = (v: string) => {
+  const s = v.trim();
+  // supports "INV-2025-3109", "INV/2025-3109", etc.
+  const isInvPattern = /^INV[-/][A-Za-z0-9-]+$/i.test(s);
+  return isInvPattern || isSixDigitBillNo(s); // <-- now 6-digit numbers use /tracks
+};
+
+const fetchSmart = async (q: string) => {
+  const s = q.trim();
+  if (isInvoiceQuery(s)) {
+    return fetchTrackingByInvoice(s);        // <-- routes 6-digit to /tracks/{xxxxx}
+  }
+  return fetchTrackingData(s);
+};
 /* ------------------------- Public Component API ------------------------- */
 type TrackingJourneyProps = {
-  /** Seed the input on mount (e.g., from dialog) */
   initialQuery?: string;
-  /** If true, auto run fetch on mount with `initialQuery` */
   autoFetch?: boolean;
 };
 
@@ -116,7 +133,7 @@ const TrackingJourney: React.FC<TrackingJourneyProps> = ({ initialQuery, autoFet
 
   const valid = useMemo(() => {
     if (!touched && q === '') return false;
-    return /^[A-Za-z0-9-]{6,}$/.test(q.trim());
+    return /^[A-Za-z0-9\-/:]{6,}$/i.test(q.trim());// allow "/" for invoice pattern
   }, [q, touched]);
 
   const stageInfo = useMemo(() => deriveStageFromApi(data || undefined), [data]);
@@ -130,7 +147,7 @@ const TrackingJourney: React.FC<TrackingJourneyProps> = ({ initialQuery, autoFet
       setData(null);
       setLoading(true);
       try {
-        const json = await fetchTrackingData(initialQuery.trim());
+        const json = await fetchSmart(initialQuery.trim()); // <-- now auto-detects invoice vs tracking
         setData(json);
       } catch (e: unknown) {
         const msg = e instanceof Error ? e.message : typeof e === 'string' ? e : JSON.stringify(e);
@@ -151,7 +168,7 @@ const TrackingJourney: React.FC<TrackingJourneyProps> = ({ initialQuery, autoFet
     setLoading(true);
 
     try {
-      const json = await fetchTrackingData(q.trim());
+      const json = await fetchSmart(q.trim()); // <-- invoice-aware fetch
       setData(json);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : typeof e === 'string' ? e : JSON.stringify(e);
@@ -161,9 +178,14 @@ const TrackingJourney: React.FC<TrackingJourneyProps> = ({ initialQuery, autoFet
     }
   };
 
+  const isInvoice = isInvoiceQuery(q) || !!data?.invoice_no;
+  const displayCode = data?.invoice_no || data?.tracking_code || data?.tracking_no || q.trim();
+  const method = data?.shipment_method || data?.method;
+  const statusText = (data?.status_name || data?.status || '').trim();
+
   return (
-    <section className="min-h-[40dvh] bg-transparent text-black">
-      <div className="container mx-auto px-0 py-0">
+    <section className="tracking-journey-section bg-transparent text-black">
+      <div className="max-w-5xl mx-auto px-0 py-0">
         <div className="w-full rounded-2xl border border-neutral-200 bg-white">
           {/* Header */}
           <div className="flex flex-col gap-3 border-b border-neutral-200 p-4 sm:flex-row sm:items-end sm:justify-between">
@@ -198,7 +220,9 @@ const TrackingJourney: React.FC<TrackingJourneyProps> = ({ initialQuery, autoFet
             </div>
 
             {touched && !valid && (
-              <p className="text-sm text-red-500 track-form-validation">Enter a valid tracking number (min 6 chars).</p>
+              <p className="text-sm text-red-500 track-form-validation">
+                Enter a valid tracking number or invoice (min 6 chars).
+              </p>
             )}
             {loading && <p className="text-sm text-neutral-600">Checking status…</p>}
             {err && <p className="text-sm text-red-600">{err}</p>}
@@ -208,15 +232,21 @@ const TrackingJourney: React.FC<TrackingJourneyProps> = ({ initialQuery, autoFet
               <div className="rounded-xl border border-neutral-200 bg-white p-4 text-sm">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="px-2 py-1 rounded bg-yellow-100 text-yellow-900 font-semibold">
-                    {data.tracking_code || data.tracking_no || q.trim()}
+                    {displayCode}
                   </span>
+              {isInvoice && (
+                <span className="px-2 py-1 rounded bg-indigo-100 text-indigo-900">Invoice/Bill</span>
+              )}
+                  {method && (
+                    <span className="px-2 py-1 rounded bg-emerald-100 text-emerald-900">{method}</span>
+                  )}
+                  {statusText && (
+                    <span className="px-2 py-1 rounded bg-neutral-100 text-neutral-900">{statusText}</span>
+                  )}
                   <button
                     type="button"
                     className="text-xs px-2 py-1 rounded border bg-gray-50 hover:bg-gray-100"
-                    onClick={() => {
-                      const t = data.tracking_code || data.tracking_no || q.trim();
-                      if (t) navigator.clipboard.writeText(t);
-                    }}
+                    onClick={() => { if (displayCode) navigator.clipboard.writeText(String(displayCode)); }}
                   >
                     Copy
                   </button>
@@ -233,7 +263,7 @@ const TrackingJourney: React.FC<TrackingJourneyProps> = ({ initialQuery, autoFet
                   const isCurrent = i === currentIndex && currentIndex >= 0;
 
                   return (
-                    <li key={s.key} className="track-list-flex relative flex sm:flex-col items-center text-center sm:w-full lg:w-auto">
+                    <li key={s.key} className="track-list-flex relative flex sm:flex-col items-center text-center sm:w/full lg:w-auto">
                       {i !== 0 && (
                         <div
                           className={[

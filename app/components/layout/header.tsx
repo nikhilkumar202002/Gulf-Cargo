@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { BiPhoneCall } from "react-icons/bi";
 import { LuMail } from "react-icons/lu";
-import { FaInstagram, FaFacebook, FaLinkedinIn } from "react-icons/fa";
+import { FaInstagram, FaFacebook } from "react-icons/fa";
 import Image from 'next/image';
 import "./Header.css";
 import { MdArrowForward } from 'react-icons/md'

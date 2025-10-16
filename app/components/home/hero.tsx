@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { IoArrowForward, IoChevronBack, IoChevronForward } from 'react-icons/io5';
+import type { Transition } from 'framer-motion';
 import TrackingForm from '../tracking/TrackingForm';
 import './HomeStyles.css';
 
@@ -33,7 +34,7 @@ const SLIDES: Slide[] = [
     description:
       "Door-to-door solutions with real-time tracking and customs support across major trade lanes.",
     primary: { label: "Track a Shipment", href: "/tracking" },
-    secondary: { label: "Coverage Map", href: "/coverage" },
+
   },
   {
     id: 3,
@@ -42,59 +43,70 @@ const SLIDES: Slide[] = [
     description:
       "Professional packing, bonded warehousing, and last-mile delivery tailored to your cargo.",
     primary: { label: "Request a Quote", href: "/quote" },
-    secondary: { label: "Compliance & Docs", href: "/docs" },
   },
 ];
 
-const TRANSITION = { duration: 0.6, ease: [0.22, 1, 0.36, 1] };
+const TRANSITION: Transition = {
+  duration: 0.6,
+  ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+};
+
 
 const Hero: React.FC = () => {
 
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState<1 | -1>(1);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const total = SLIDES.length;
   const current = SLIDES[index];
 
-   const startAutoplay = useCallback(() => {
-    stopAutoplay();
-    timerRef.current = setInterval(() => {
-      setDirection(1);
-      setIndex((i) => (i + 1) % total);
-    }, 6000);
-  }, [total]);
+const stopAutoplay = useCallback(() => {
+  if (timerRef.current) {
+    clearInterval(timerRef.current);
+    timerRef.current = null;
+  }
+}, []);
 
-  const stopAutoplay = useCallback(() => {
-    if (timerRef.current) clearInterval(timerRef.current);
-  }, []);
+// 2) Then use it inside startAutoplay
+const startAutoplay = useCallback(() => {
+  stopAutoplay();
+  timerRef.current = setInterval(() => {
+    setDirection(1);
+    setIndex((i) => (i + 1) % total);
+  }, 6000);
+}, [total, stopAutoplay]);
 
-  useEffect(() => {
+useEffect(() => {
+  startAutoplay();
+  return stopAutoplay;
+}, [startAutoplay, stopAutoplay]);
+
+ useEffect(() => {
     startAutoplay();
     return stopAutoplay;
   }, [startAutoplay, stopAutoplay]);
 
-  // Keyboard nav
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowRight') goNext();
-      if (e.key === 'ArrowLeft') goPrev();
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, []);
+const goNext = useCallback(() => {
+  setDirection(1);
+  setIndex((i) => (i + 1) % total);
+  startAutoplay();
+}, [total, startAutoplay]);
 
-  const goNext = useCallback(() => {
-    setDirection(1);
-    setIndex((i) => (i + 1) % total);
-    startAutoplay();
-  }, [total, startAutoplay]);
+const goPrev = useCallback(() => {
+  setDirection(-1);
+  setIndex((i) => (i - 1 + total) % total);
+  startAutoplay();
+}, [total, startAutoplay]);
 
-  const goPrev = useCallback(() => {
-    setDirection(-1);
-    setIndex((i) => (i - 1 + total) % total);
-    startAutoplay();
-  }, [total, startAutoplay]);
+useEffect(() => {
+  const onKey = (e: KeyboardEvent) => {
+    if (e.key === 'ArrowRight') goNext();
+    if (e.key === 'ArrowLeft') goPrev();
+  };
+  window.addEventListener('keydown', onKey);
+  return () => window.removeEventListener('keydown', onKey);
+}, [goNext, goPrev]);
 
   // For swipe gesture threshold
   const SWIPE_CONFIDENCE = 80;
