@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { FiSearch, FiPackage, FiTruck, FiMapPin, FiCheckCircle } from 'react-icons/fi';
 import type { IconType } from 'react-icons';
-import { fetchTrackingData, fetchTrackingByInvoice } from '../../api/trackingApi'; // <-- added import
+import { fetchTrackingData, fetchTrackingByInvoice } from '../../api/trackingApi';
 import './TrackingPageStyles.css';
 
 /* ------------------------------- Types ---------------------------------- */
@@ -17,7 +17,6 @@ interface Stage {
 }
 
 type TrackResponse = {
-  // generic tracking fields (existing)
   tracking_code?: string;
   tracking_no?: string;
   status_name?: string;
@@ -30,11 +29,9 @@ type TrackResponse = {
   destination_port?: string;
   updated_at?: string;
 
-  // invoice-specific fields (NEW)
   success?: boolean;
   invoice_no?: string;
   shipment_method?: string;
-  // the invoice endpoint returns "status" as the human label already
   [k: string]: unknown;
 };
 
@@ -57,10 +54,10 @@ const labelCopy: Record<Mode, string> = {
 
 /* ----------------------- Status → Stage Mapping ------------------------- */
 const STATUS_ID_TO_STAGE: Record<number, number> = {
-  1: 0, 2: 0, 11: 0, 13: 0,
-  3: 1, 12: 1, 14: 1,
-  4: 2, 5: 2, 6: 2, 7: 2,
-  8: 3, 9: 3, 10: 3,
+  1: 0, 2: 0, 11: 0, 13: 0,  // booked cluster
+  3: 1, 12: 1, 14: 1,        // in-transit cluster
+  4: 2, 5: 2, 6: 2, 7: 2,    // arrival & clearance
+  8: 3, 9: 3, 10: 3,         // out for delivery
 };
 
 const STATUS_NAME_TO_STAGE: Record<string, number> = {
@@ -72,6 +69,93 @@ const STATUS_NAME_TO_STAGE: Record<string, number> = {
 };
 
 const EXCEPTION_NAMES = new Set(['shipment on hold', 'not delivered']);
+
+function normalizeKey(s: string) {
+  return (s || '').trim().replace(/\s+/g, ' ').toLowerCase();
+}
+
+function resolveStatus(payload?: TrackResponse) {
+  if (!payload) return { stageIndex: 0, displayLabel: 'Shipment Booked', raw: '' };
+
+  // 1) Extract raw fields
+  const rawId =
+    (payload as any)?.status_id ??
+    (payload as any)?.statusId ??
+    (payload as any)?.status_code ??
+    (payload as any)?.statusID ??
+    (payload as any)?.status; // can be "8" (physical) OR "Enquiry collected" (cargo)
+
+  const rawLabel =
+    (typeof payload?.status_name === 'string' && payload.status_name) ||
+    (typeof payload?.status === 'string' && isNaN(Number(payload.status)) ? payload.status : '') ||
+    (typeof (payload as any)?.status_label === 'string' && (payload as any).status_label) ||
+    (typeof (payload as any)?.current_status === 'string' && (payload as any).current_status) ||
+    (typeof (payload as any)?.name === 'string' && (payload as any).name) ||
+    '';
+
+  // 2) Try ID path first (handles "8" as string)
+  const id = Number(rawId);
+  if (!Number.isNaN(id) && STATUS_ID_TO_STAGE[id] !== undefined) {
+    const stageIndex = STATUS_ID_TO_STAGE[id];
+    // Derive a display label from the stage if we don't have a good text label
+    const displayByStage = STAGES[stageIndex]?.title || 'Shipment Booked';
+    // If we also got a textual label, normalize it through the table/heuristics
+    const finalLabel = rawLabel ? normalizeStatusLabel(rawLabel, stageIndex) : displayByStage;
+    return { stageIndex, displayLabel: finalLabel, raw: String(rawId) };
+  }
+
+  // 3) Label path (handles "Enquiry collected")
+  if (rawLabel) {
+    const stage = deriveStageFromLabel(rawLabel);
+    const displayLabel = normalizeStatusLabel(rawLabel, stage);
+    return { stageIndex: stage, displayLabel, raw: rawLabel };
+  }
+
+  // 4) Last-resort heuristics on string rawId if it’s non-numeric text
+  if (typeof rawId === 'string' && isNaN(Number(rawId))) {
+    const stage = deriveStageFromLabel(rawId);
+    const displayLabel = normalizeStatusLabel(rawId, stage);
+    return { stageIndex: stage, displayLabel, raw: rawId };
+  }
+
+  // Default
+  return { stageIndex: 0, displayLabel: 'Shipment Booked', raw: '' };
+}
+
+function deriveStageFromLabel(detail: string) {
+  const key = normalizeKey(detail);
+  if (EXCEPTION_NAMES.has(key)) return 2; // treat exceptions under arrival/hold cluster
+
+  if (RAW_TO_DISPLAY[key] !== undefined) {
+    // map display → back to a stage index via the STAGES list
+    const label = RAW_TO_DISPLAY[key];
+    const idx = STAGES.findIndex(s => s.title === label);
+    if (idx >= 0) return idx;
+  }
+
+  // Heuristics
+  if (/deliver/i.test(key)) return /not/.test(key) ? 3 : 4;
+  if (/out/.test(key)) return 3;
+  if (/arriv|dest|clear/.test(key)) return 2;
+  if (/transit|forward|transfer/.test(key)) return 1;
+  if (/book|receiv|enquiry|pending/.test(key)) return 0;
+
+  return 0;
+}
+
+function normalizeStatusLabel(detail: string, stageIndex: number) {
+  const key = normalizeKey(detail);
+  if (RAW_TO_DISPLAY[key]) return RAW_TO_DISPLAY[key];
+
+  if (/forward|transfer|transit/i.test(key)) return 'In Transit';
+  if (/arriv|clear/i.test(key)) return 'Arrival & Clearance';
+  if (/out.*deliver/i.test(key)) return 'Out for Delivery';
+  if (/deliver/i.test(key)) return 'Delivered';
+  if (/book|receiv|enquiry|pending/i.test(key)) return 'Shipment Booked';
+
+  if (stageIndex >= 0 && stageIndex < STAGES.length) return STAGES[stageIndex].title;
+  return detail || 'Shipment Booked';
+}
 
 function deriveStageFromApi(payload?: TrackResponse) {
   const detail = (payload?.status_name || payload?.status || '').trim();
@@ -100,23 +184,49 @@ function deriveStageFromApi(payload?: TrackResponse) {
   return { index: 0, exception, detail };
 }
 
-/* --------------------------- Helpers (NEW) ------------------------------- */
-const isSixDigitBillNo = (v: string) => /^\d{6}$/.test(v.trim());
+/* --------------------------- Helpers (UPDATED) --------------------------- */
+// Accept exactly 3, 6, or 9 digits
+const is3or6or9Digits = (v: string) => /^(\d{3}|\d{6}|\d{9})$/.test(v.trim());
+
+// Accept letter prefix + hyphen, then one or more groups of letters/digits/hyphens
+// Examples: "A-12345", "KSA-2025-001"
+const isLetterHyphenInvoice = (v: string) => /^[A-Za-z]+-[A-Za-z0-9-]+$/.test(v.trim());
+
+// Keep legacy INV patterns like "INV-2025-3109" or "INV/2025-3109"
+const isInvPattern = (v: string) => /^INV[-/][A-Za-z0-9-]+$/i.test(v.trim());
 
 const isInvoiceQuery = (v: string) => {
   const s = v.trim();
-  // supports "INV-2025-3109", "INV/2025-3109", etc.
-  const isInvPattern = /^INV[-/][A-Za-z0-9-]+$/i.test(s);
-  return isInvPattern || isSixDigitBillNo(s); // <-- now 6-digit numbers use /tracks
+  return is3or6or9Digits(s) || isLetterHyphenInvoice(s) || isInvPattern(s);
 };
 
 const fetchSmart = async (q: string) => {
   const s = q.trim();
   if (isInvoiceQuery(s)) {
-    return fetchTrackingByInvoice(s);        // <-- routes 6-digit to /tracks/{xxxxx}
+    return fetchTrackingByInvoice(s);
   }
   return fetchTrackingData(s);
 };
+
+/* --------------------- Status Display Normalization --------------------- */
+const RAW_TO_DISPLAY: Record<string, string> = {
+  'shipment received': 'Shipment Booked',
+  'shipment booked': 'Shipment Booked',
+  'pending': 'Shipment Booked',
+  'enquiry collected': 'Shipment Booked',
+  'shipment forwarded': 'In Transit',
+  'more tracking': 'In Transit',
+  'transfer': 'In Transit',
+  'shipment arrived': 'Arrival & Clearance',
+  'waiting for clearance': 'Arrival & Clearance',
+  'shipment on hold': 'Arrival & Clearance',
+  'shipment cleared': 'Arrival & Clearance',
+  'delivery arranged': 'Out for Delivery',
+  'shipment out for delivery': 'Out for Delivery',
+  'not delivered': 'Out for Delivery',
+  'delivered': 'Delivered',
+};
+
 /* ------------------------- Public Component API ------------------------- */
 type TrackingJourneyProps = {
   initialQuery?: string;
@@ -131,13 +241,16 @@ const TrackingJourney: React.FC<TrackingJourneyProps> = ({ initialQuery, autoFet
   const [data, setData] = useState<TrackResponse | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
+  // VALIDATION: allow 3+ chars (to permit 3-digit invoices), limited charset
   const valid = useMemo(() => {
     if (!touched && q === '') return false;
-    return /^[A-Za-z0-9\-/:]{6,}$/i.test(q.trim());// allow "/" for invoice pattern
+    return /^[A-Za-z0-9\-/:]{3,}$/i.test(q.trim());
   }, [q, touched]);
 
-  const stageInfo = useMemo(() => deriveStageFromApi(data || undefined), [data]);
-  const currentIndex = data ? stageInfo.index : -1;
+  const { stageIndex: currentIndex, displayLabel: displayStatus } = useMemo(
+  () => resolveStatus(data || undefined),
+  [data]
+);
 
   useEffect(() => {
     if (!initialQuery || !autoFetch) return;
@@ -147,7 +260,7 @@ const TrackingJourney: React.FC<TrackingJourneyProps> = ({ initialQuery, autoFet
       setData(null);
       setLoading(true);
       try {
-        const json = await fetchSmart(initialQuery.trim()); // <-- now auto-detects invoice vs tracking
+        const json = await fetchSmart(initialQuery.trim());
         setData(json);
       } catch (e: unknown) {
         const msg = e instanceof Error ? e.message : typeof e === 'string' ? e : JSON.stringify(e);
@@ -168,7 +281,7 @@ const TrackingJourney: React.FC<TrackingJourneyProps> = ({ initialQuery, autoFet
     setLoading(true);
 
     try {
-      const json = await fetchSmart(q.trim()); // <-- invoice-aware fetch
+      const json = await fetchSmart(q.trim());
       setData(json);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : typeof e === 'string' ? e : JSON.stringify(e);
@@ -181,7 +294,9 @@ const TrackingJourney: React.FC<TrackingJourneyProps> = ({ initialQuery, autoFet
   const isInvoice = isInvoiceQuery(q) || !!data?.invoice_no;
   const displayCode = data?.invoice_no || data?.tracking_code || data?.tracking_no || q.trim();
   const method = data?.shipment_method || data?.method;
-  const statusText = (data?.status_name || data?.status || '').trim();
+
+  // const rawStatus = (data?.status_name || data?.status || '').trim();
+  // const displayStatus = normalizeStatusLabel(rawStatus, currentIndex);
 
   return (
     <section className="tracking-journey-section bg-transparent text-black">
@@ -221,7 +336,7 @@ const TrackingJourney: React.FC<TrackingJourneyProps> = ({ initialQuery, autoFet
 
             {touched && !valid && (
               <p className="text-sm text-red-500 track-form-validation">
-                Enter a valid tracking number or invoice (min 6 chars).
+                Enter a valid tracking number or invoice (3+ chars).
               </p>
             )}
             {loading && <p className="text-sm text-neutral-600">Checking status…</p>}
@@ -234,14 +349,14 @@ const TrackingJourney: React.FC<TrackingJourneyProps> = ({ initialQuery, autoFet
                   <span className="px-2 py-1 rounded bg-yellow-100 text-yellow-900 font-semibold">
                     {displayCode}
                   </span>
-              {isInvoice && (
-                <span className="px-2 py-1 rounded bg-indigo-100 text-indigo-900">Invoice/Bill</span>
-              )}
+                  {isInvoice && (
+                    <span className="px-2 py-1 rounded bg-indigo-100 text-indigo-900">Invoice/Bill</span>
+                  )}
                   {method && (
                     <span className="px-2 py-1 rounded bg-emerald-100 text-emerald-900">{method}</span>
                   )}
-                  {statusText && (
-                    <span className="px-2 py-1 rounded bg-neutral-100 text-neutral-900">{statusText}</span>
+                  {displayStatus && (
+                    <span className="px-2 py-1 rounded bg-neutral-100 text-neutral-900">{displayStatus}</span>
                   )}
                   <button
                     type="button"
@@ -263,7 +378,7 @@ const TrackingJourney: React.FC<TrackingJourneyProps> = ({ initialQuery, autoFet
                   const isCurrent = i === currentIndex && currentIndex >= 0;
 
                   return (
-                    <li key={s.key} className="track-list-flex relative flex sm:flex-col items-center text-center sm:w/full lg:w-auto">
+                    <li key={s.key} className="track-list-flex relative flex sm:flex-col items-center text-center sm:w-full lg:w-auto">
                       {i !== 0 && (
                         <div
                           className={[
