@@ -1,159 +1,186 @@
 'use client';
 
 import React from 'react';
-import ReactDOM from 'react-dom';
-import { FiCheckCircle, FiMapPin, FiPackage, FiTruck } from 'react-icons/fi';
-import './TrackfromStyles.css';
+import { FiPackage, FiTruck, FiMapPin, FiCheckCircle } from 'react-icons/fi';
+import type { IconType } from 'react-icons';
 
 export type TrackingModalShipment = {
   trackingCode: string;
   method?: string;
-  statusName?: string;
-  statusId?: number;
-  status?: string;
+  statusName?: string;         // raw label if any
+  statusId?: number;           // numeric if present
+  status?: string;             // raw status field
   origin?: string;
   originPort?: string;
   destination?: string;
   destinationPort?: string;
   updatedAt?: string;
   exceptionNote?: string;
-  currentIndex: number; // 0..4
+  currentIndex: number;        // -1..4 (neutral when -1)
+  displayStatus?: string;      // normalized label for chip
 };
 
 type TrackingModalProps = {
   open: boolean;
   onClose: () => void;
-  loading?: boolean;
-  error?: string;
-  shipment?: TrackingModalShipment;
+  shipment: TrackingModalShipment | null;
 };
 
-const STAGE_LABELS = [
-  { title: 'Shipment Booked', alt: 'Received/Pending', icon: FiPackage },
-  { title: 'In Transit', alt: 'Forwarded/Transfer', icon: FiTruck },
-  { title: 'Arrival & Clearance', alt: 'Arrived/Clearing', icon: FiMapPin },
-  { title: 'Out for Delivery', alt: 'Delivery Arranged', icon: FiTruck },
-  { title: 'Delivered', alt: 'Complete', icon: FiCheckCircle },
+/* ------------------------------ Timeline -------------------------------- */
+interface Stage {
+  key: 'booked' | 'in_transit' | 'arrival' | 'out_for_delivery' | 'delivered';
+  title: string;
+  alt: string;
+  icon: IconType;
+}
+
+const STAGES: Stage[] = [
+  { key: 'booked',            title: 'Shipment Booked',        alt: 'Received/Pending',   icon: FiPackage },
+  { key: 'in_transit',        title: 'In Transit',             alt: 'Forwarded/Transfer', icon: FiTruck   },
+  { key: 'arrival',           title: 'Arrival & Clearance',    alt: 'Arrived/Clearing',   icon: FiMapPin  },
+  { key: 'out_for_delivery',  title: 'Out for Delivery',       alt: 'Delivery Arranged',  icon: FiTruck   },
+  { key: 'delivered',         title: 'Delivered',              alt: 'Complete',           icon: FiCheckCircle },
 ];
 
-const ModalContent: React.FC<TrackingModalProps> = ({ onClose, loading, error, shipment }) => {
-  const code = shipment?.trackingCode || '—';
-  const method = shipment?.method || '—';
-  const statusText = (shipment?.statusName || shipment?.status || '').trim() || '—';
-  const isInvoiceOrBill = /^INV[-/]/i.test(code) || /^\d{6}$/.test(code);
+/* -------------------------------- Modal --------------------------------- */
+const TrackingModal: React.FC<TrackingModalProps> = ({ open, onClose, shipment }) => {
+  if (!open) return null;
+
+  const currentIndex = shipment?.currentIndex ?? -1;
+  const statusText =
+    (shipment?.displayStatus ||
+      (shipment?.statusName || shipment?.status || '').trim() ||
+      '');
 
   return (
-    <div className="tracking-modal-backdrop" role="dialog" aria-modal="true">
-      <div className="tracking-modal">
-        <div className="tracking-modal-header">
-          <h3 className="tracking-modal-title">Tracking Details</h3>
-          <button className="tracking-modal-close" onClick={onClose} aria-label="Close">×</button>
+    <div
+      role="dialog"
+      aria-modal="true"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-3xl rounded-2xl bg-white shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-start justify-between border-b border-neutral-200 p-5">
+          <div>
+            <h2 className="text-xl font-semibold tracking-tight">Tracking Details</h2>
+            <p className="text-xs text-neutral-600">Live milestone view</p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-lg border px-3 py-1 text-sm hover:bg-neutral-50"
+            aria-label="Close"
+          >
+            Close
+          </button>
         </div>
 
-        <div className="tracking-modal-body">
-          {loading && <p className="text-sm text-neutral-700">Fetching latest status…</p>}
-          {error && !loading && <p className="text-sm text-red-600">{error}</p>}
+        {/* Identifiers */}
+        <div className="p-5 pt-4">
+          <div className="flex flex-wrap items-center gap-2 text-sm">
+            {shipment?.trackingCode && (
+              <span className="px-2 py-1 rounded bg-yellow-100 text-yellow-900 font-semibold">
+                {shipment.trackingCode}
+              </span>
+            )}
+            {shipment?.method && (
+              <span className="px-2 py-1 rounded bg-emerald-100 text-emerald-900">
+                {shipment.method}
+              </span>
+            )}
+            {statusText && (
+              <span className="px-2 py-1 rounded bg-neutral-100 text-neutral-900">
+                {statusText}
+              </span>
+            )}
+            {shipment?.updatedAt && (
+              <span className="px-2 py-1 rounded bg-indigo-50 text-indigo-900">
+                Updated {new Date(shipment.updatedAt).toLocaleString()}
+              </span>
+            )}
+          </div>
+        </div>
 
-          {!loading && !error && (
-            <>
-              {/* Summary */}
-              <div className="rounded-xl border border-neutral-200 bg-white p-4 text-sm">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="px-2 py-1 rounded bg-yellow-100 text-yellow-900 font-semibold">
-                    {code}
-                  </span>
-                  {isInvoiceOrBill && (
-                    <span className="px-2 py-1 rounded bg-indigo-100 text-indigo-900">Invoice/Bill</span>
-                  )}
-                  {method !== '—' && (
-                    <span className="px-2 py-1 rounded bg-emerald-100 text-emerald-900">{method}</span>
-                  )}
-                  {statusText !== '—' && (
-                    <span className="px-2 py-1 rounded bg-neutral-100 text-neutral-900">{statusText}</span>
-                  )}
-                  {shipment?.updatedAt && (
-                    <span className="px-2 py-1 rounded bg-neutral-50 text-neutral-700">
-                      Updated: {new Date(shipment.updatedAt).toLocaleString()}
-                    </span>
-                  )}
+        {/* Stages */}
+        <div className="px-5 pb-5">
+          <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-5">
+            <ol className="relative mx-auto sm:flex sm:flex-col sm:w-full lg:grid lg:grid-cols-5 gap-0">
+              {STAGES.map((s, i) => {
+                const Icon = s.icon;
+                const reached = i <= currentIndex && currentIndex >= 0;
+                const isCurrent = i === currentIndex && currentIndex >= 0;
+
+                return (
+                  <li key={s.key} className="relative flex sm:flex-col items-center text-center">
+                    {i !== 0 && (
+                      <div
+                        className={[
+                          'absolute left-0 right-0 top-4 h-1',
+                          reached ? 'bg-emerald-400' : 'bg-neutral-200',
+                        ].join(' ')}
+                      />
+                    )}
+                    <div className="relative z-10 flex h-8 w-8 items-center justify-center">
+                      <div className={['absolute inset-0 rounded-full', reached ? 'bg-emerald-200' : 'bg-neutral-200'].join(' ')} />
+                      <Icon size={20} className={reached ? 'text-black' : 'text-neutral-400'} />
+                    </div>
+                    <div className="mt-2 text-xs font-medium text-black">
+                      <div>{s.title}</div>
+                      <div className="text-neutral-500">{s.alt}</div>
+                    </div>
+                    {isCurrent && (
+                      <div className="mt-2 rounded-full bg-emerald-500/10 px-3 py-1 text-[10px] font-semibold text-emerald-600">
+                        In progress
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
+            </ol>
+          </div>
+        </div>
+
+        {/* Meta grid */}
+        {(shipment?.origin ||
+          shipment?.destination ||
+          shipment?.originPort ||
+          shipment?.destinationPort) && (
+          <div className="px-5 pb-6">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 text-sm">
+              {shipment?.origin && (
+                <div className="rounded-lg border p-3">
+                  <div className="text-neutral-500">Origin</div>
+                  <div className="font-medium">{shipment.origin}</div>
                 </div>
-
-                {(shipment?.origin || shipment?.originPort || shipment?.destination || shipment?.destinationPort) && (
-                  <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="rounded-lg bg-neutral-50 p-3">
-                      <div className="text-[11px] text-neutral-500">Origin</div>
-                      <div className="text-sm font-medium">
-                        {shipment?.origin || '—'}
-                        {shipment?.originPort ? ` • ${shipment.originPort}` : ''}
-                      </div>
-                    </div>
-                    <div className="rounded-lg bg-neutral-50 p-3">
-                      <div className="text-[11px] text-neutral-500">Destination</div>
-                      <div className="text-sm font-medium">
-                        {shipment?.destination || '—'}
-                        {shipment?.destinationPort ? ` • ${shipment.destinationPort}` : ''}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {shipment?.exceptionNote && (
-                  <div className="mt-3 rounded-lg bg-yellow-50 p-3 text-sm text-yellow-900">
-                    Note: {shipment.exceptionNote}
-                  </div>
-                )}
-              </div>
-
-              {/* Stages */}
-              <div className="mt-4 rounded-2xl border border-neutral-200 bg-neutral-50 p-5">
-                <ol className="relative mx-auto sm:flex sm:flex-col sm:w-full lg:grid lg:grid-cols-5 gap-0">
-                  {STAGE_LABELS.map((s, i) => {
-                    const Icon = s.icon;
-                    const reached = shipment ? i <= shipment.currentIndex && shipment.currentIndex >= 0 : false;
-                    const isCurrent = shipment ? i === shipment.currentIndex && shipment.currentIndex >= 0 : false;
-
-                    return (
-                      <li key={s.title} className="track-list-flex relative flex sm:flex-col items-center text-center sm:w/full lg:w-auto">
-                        {i !== 0 && (
-                          <div
-                            className={[
-                              'absolute left-0 right-0 top-4 h-1',
-                              reached ? 'progressBarActive' : 'progressBar',
-                            ].join(' ')}
-                          />
-                        )}
-                        <div className="relative z-10 flex h-8 w-8 items-center justify-center">
-                          <div className={['absolute inset-0 rounded-full', reached ? 'nodeGlow' : 'bg-neutral-200'].join(' ')} />
-                          <Icon size={20} className={reached ? 'text-black' : 'text-neutral-400'} />
-                        </div>
-                        <div className="track-title-description text-xs font-medium text-black">
-                          <h2 className="track-form-data-heading">{s.title}</h2>
-                          <p className="track-form-data-sub-heading">{s.alt}</p>
-                        </div>
-                        {isCurrent && (
-                          <div className="mt-2 rounded-full bg-emerald-500/10 px-3 py-1 text-[10px] font-semibold text-emerald-600">
-                            In progress
-                          </div>
-                        )}
-                      </li>
-                    );
-                  })}
-                </ol>
-              </div>
-            </>
-          )}
-        </div>
+              )}
+              {shipment?.destination && (
+                <div className="rounded-lg border p-3">
+                  <div className="text-neutral-500">Destination</div>
+                  <div className="font-medium">{shipment.destination}</div>
+                </div>
+              )}
+              {shipment?.originPort && (
+                <div className="rounded-lg border p-3">
+                  <div className="text-neutral-500">Origin Port</div>
+                  <div className="font-medium">{shipment.originPort}</div>
+                </div>
+              )}
+              {shipment?.destinationPort && (
+                <div className="rounded-lg border p-3">
+                  <div className="text-neutral-500">Destination Port</div>
+                  <div className="font-medium">{shipment.destinationPort}</div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
-};
-
-const TrackingModal: React.FC<TrackingModalProps> = (props) => {
-  if (!props.open) return null;
-
-  // Portal to body to avoid stacking/overflow issues
-  const node = document.body;
-  return ReactDOM.createPortal(<ModalContent {...props} />, node);
 };
 
 export default TrackingModal;
