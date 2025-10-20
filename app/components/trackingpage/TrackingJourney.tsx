@@ -54,10 +54,10 @@ const labelCopy: Record<Mode, string> = {
 
 /* ----------------------- Status → Stage Mapping ------------------------- */
 const STATUS_ID_TO_STAGE: Record<number, number> = {
-  1: 0, 2: 0, 11: 0, 13: 0,  // booked cluster
-  3: 1, 12: 1, 14: 1,        // in-transit cluster
-  4: 2, 5: 2, 6: 2, 7: 2,    // arrival & clearance
-  8: 3, 9: 3, 10: 3,         // out for delivery
+  1: 0, 2: 0, 11: 0, 13: 0,
+  3: 1, 12: 1, 14: 1,
+  4: 2, 5: 2, 6: 2, 7: 2,
+  8: 3, 9: 3, 10: 3,
 };
 
 const STATUS_NAME_TO_STAGE: Record<string, number> = {
@@ -70,70 +70,69 @@ const STATUS_NAME_TO_STAGE: Record<string, number> = {
 
 const EXCEPTION_NAMES = new Set(['shipment on hold', 'not delivered']);
 
-function normalizeKey(s: string) {
+function normalizeKey(s: string): string {
   return (s || '').trim().replace(/\s+/g, ' ').toLowerCase();
 }
 
-function resolveStatus(payload?: TrackResponse) {
-  if (!payload) return { stageIndex: 0, displayLabel: 'Shipment Booked', raw: '' };
+function getString(o: unknown, keys: readonly string[]): string {
+  if (o && typeof o === 'object') {
+    const dict = o as Record<string, unknown>;
+    for (const k of keys) {
+      const v = dict[k];
+      if (typeof v === 'string') return v;
+    }
+  }
+  return '';
+}
 
-  // 1) Extract raw fields
-  const rawId =
-    (payload as any)?.status_id ??
-    (payload as any)?.statusId ??
-    (payload as any)?.status_code ??
-    (payload as any)?.statusID ??
-    (payload as any)?.status; // can be "8" (physical) OR "Enquiry collected" (cargo)
+function getNumberish(o: unknown, keys: readonly string[]): number | null {
+  if (o && typeof o === 'object') {
+    const dict = o as Record<string, unknown>;
+    for (const k of keys) {
+      const v = dict[k];
+      if (typeof v === 'number' && Number.isFinite(v)) return v;
+      if (typeof v === 'string') {
+        const n = Number(v);
+        if (!Number.isNaN(n)) return n;
+      }
+    }
+  }
+  return null;
+}
 
-  const rawLabel =
-    (typeof payload?.status_name === 'string' && payload.status_name) ||
-    (typeof payload?.status === 'string' && isNaN(Number(payload.status)) ? payload.status : '') ||
-    (typeof (payload as any)?.status_label === 'string' && (payload as any).status_label) ||
-    (typeof (payload as any)?.current_status === 'string' && (payload as any).current_status) ||
-    (typeof (payload as any)?.name === 'string' && (payload as any).name) ||
-    '';
+function resolveStatus(payload?: TrackResponse): { stageIndex: number; displayLabel: string; raw: string } {
 
-  // 2) Try ID path first (handles "8" as string)
-  const id = Number(rawId);
-  if (!Number.isNaN(id) && STATUS_ID_TO_STAGE[id] !== undefined) {
+  if (!payload) return { stageIndex: -1, displayLabel: '', raw: '' };
+
+  const id = getNumberish(payload, ['status_id', 'statusId', 'status_code', 'statusID', 'status']);
+  const textLabel = getString(payload, ['status_name', 'status', 'status_label', 'current_status', 'name']);
+
+  if (id !== null && STATUS_ID_TO_STAGE[id] !== undefined) {
     const stageIndex = STATUS_ID_TO_STAGE[id];
-    // Derive a display label from the stage if we don't have a good text label
-    const displayByStage = STAGES[stageIndex]?.title || 'Shipment Booked';
-    // If we also got a textual label, normalize it through the table/heuristics
-    const finalLabel = rawLabel ? normalizeStatusLabel(rawLabel, stageIndex) : displayByStage;
-    return { stageIndex, displayLabel: finalLabel, raw: String(rawId) };
+    const displayFallback = STAGES[stageIndex]?.title ?? 'Shipment Booked';
+    const display = textLabel ? normalizeStatusLabel(textLabel, stageIndex) : displayFallback;
+    return { stageIndex, displayLabel: display, raw: String(id) };
   }
 
-  // 3) Label path (handles "Enquiry collected")
-  if (rawLabel) {
-    const stage = deriveStageFromLabel(rawLabel);
-    const displayLabel = normalizeStatusLabel(rawLabel, stage);
-    return { stageIndex: stage, displayLabel, raw: rawLabel };
+  if (textLabel) {
+    const stageIndex = deriveStageFromLabel(textLabel);
+    return { stageIndex, displayLabel: normalizeStatusLabel(textLabel, stageIndex), raw: textLabel };
   }
 
-  // 4) Last-resort heuristics on string rawId if it’s non-numeric text
-  if (typeof rawId === 'string' && isNaN(Number(rawId))) {
-    const stage = deriveStageFromLabel(rawId);
-    const displayLabel = normalizeStatusLabel(rawId, stage);
-    return { stageIndex: stage, displayLabel, raw: rawId };
-  }
-
-  // Default
+  // If nothing matched, default to booked
   return { stageIndex: 0, displayLabel: 'Shipment Booked', raw: '' };
 }
 
-function deriveStageFromLabel(detail: string) {
+function deriveStageFromLabel(detail: string): number {
   const key = normalizeKey(detail);
-  if (EXCEPTION_NAMES.has(key)) return 2; // treat exceptions under arrival/hold cluster
+  if (EXCEPTION_NAMES.has(key)) return 2;
 
   if (RAW_TO_DISPLAY[key] !== undefined) {
-    // map display → back to a stage index via the STAGES list
     const label = RAW_TO_DISPLAY[key];
     const idx = STAGES.findIndex(s => s.title === label);
     if (idx >= 0) return idx;
   }
 
-  // Heuristics
   if (/deliver/i.test(key)) return /not/.test(key) ? 3 : 4;
   if (/out/.test(key)) return 3;
   if (/arriv|dest|clear/.test(key)) return 2;
@@ -143,7 +142,8 @@ function deriveStageFromLabel(detail: string) {
   return 0;
 }
 
-function normalizeStatusLabel(detail: string, stageIndex: number) {
+
+function normalizeStatusLabel(detail: string, stageIndex: number): string {
   const key = normalizeKey(detail);
   if (RAW_TO_DISPLAY[key]) return RAW_TO_DISPLAY[key];
 
@@ -247,7 +247,7 @@ const TrackingJourney: React.FC<TrackingJourneyProps> = ({ initialQuery, autoFet
     return /^[A-Za-z0-9\-/:]{3,}$/i.test(q.trim());
   }, [q, touched]);
 
-  const { stageIndex: currentIndex, displayLabel: displayStatus } = useMemo(
+const { stageIndex: currentIndex, displayLabel: displayStatus } = useMemo(
   () => resolveStatus(data || undefined),
   [data]
 );
