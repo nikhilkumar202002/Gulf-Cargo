@@ -28,14 +28,6 @@ export type TrackResponse = {
   shipment_method?: string;
 };
 
-/* ------------------------------ UI Copy --------------------------------- */
-const placeholders: Record<Mode, string> = {
-  tracking: 'Enter tracking number or Invoice Number',
-};
-const labelCopy: Record<Mode, string> = {
-  tracking: 'Track by Tracking Number or Invoice',
-};
-
 /* ----------------------- Timeline definitions --------------------------- */
 const STAGE_TITLES = [
   'Shipment Booked',
@@ -51,6 +43,7 @@ const STATUS_ID_TO_STAGE: Record<number, number> = {
   3: 1, 12: 1, 14: 1,
   4: 2, 5: 2, 6: 2, 7: 2,
   8: 3, 9: 3, 10: 3,
+  16: 4,
 };
 
 const RAW_TO_DISPLAY: Record<string, string> = {
@@ -93,9 +86,12 @@ const isLetterHyphenInvoice = (v: string) => /^[A-Za-z]+-[A-Za-z0-9-]+$/.test(v.
 // Invoice patterns: "INV-2025-3109", "INV/2025-3109"
 const isInvoicePattern = (v: string) => /^INV[-/][A-Za-z0-9-]+$/i.test(v.trim());
 
+// Accept letter prefix followed by numbers, like "E91", "R0092", "OP0001"
+const isLetterNumberInvoice = (v: string) => /^[A-Za-z]+[0-9]+$/.test(v.trim());
+
 // Any value that should go to /tracks
 const isInvoiceQuery = (v: string) =>
-  is3or6or9Digits(v) || isLetterHyphenInvoice(v) || isInvoicePattern(v);
+  is3or6or9Digits(v) || isLetterHyphenInvoice(v) || isInvoicePattern(v) || isLetterNumberInvoice(v);
 
 // Allow 3+ chars
 const isValidCodeInput = (v: string) => /^[A-Za-z0-9\-/:]{3,}$/i.test(v.trim());
@@ -257,9 +253,8 @@ const TrackingForm: React.FC = () => {
       setShipment(mapped);
       setIsModalOpen(true);
     } catch (err) {
-      const msg =
-        err instanceof Error ? err.message : typeof err === 'string' ? err : 'Failed to fetch';
-      setErrorMsg(msg);
+      // Set a user-friendly error message instead of the backend one
+      setErrorMsg('Tracking number not found. Please check the number and try again.');
     } finally {
       setLoading(false);
     }

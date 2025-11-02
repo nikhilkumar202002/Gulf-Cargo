@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { FiSearch, FiPackage, FiTruck, FiMapPin, FiCheckCircle } from 'react-icons/fi';
+import { FiSearch } from 'react-icons/fi';
+import { BsBoxSeam, BsAirplane, BsHouseCheck } from 'react-icons/bs';
+import { FaPlaneDeparture, FaWarehouse } from 'react-icons/fa';
 import type { IconType } from 'react-icons';
 import { fetchTrackingData, fetchTrackingByInvoice } from '../../api/trackingApi';
 import './TrackingPageStyles.css';
@@ -37,11 +39,11 @@ type TrackResponse = {
 
 /* ------------------------------ UI Copy --------------------------------- */
 const STAGES: Stage[] = [
-  { key: 'booked',            title: 'Shipment Booked',        alt: 'Received/Pending',   icon: FiPackage },
-  { key: 'in_transit',        title: 'In Transit',             alt: 'Forwarded/Transfer', icon: FiTruck   },
-  { key: 'arrival',           title: 'Arrival & Clearance',    alt: 'Arrived/Clearing',   icon: FiMapPin  },
-  { key: 'out_for_delivery',  title: 'Out for Delivery',       alt: 'Delivery Arranged',  icon: FiTruck   },
-  { key: 'delivered',         title: 'Delivered',              alt: 'Complete',           icon: FiCheckCircle },
+  { key: 'booked',            title: 'Shipment Booked',        alt: 'Received/Pending',   icon: BsBoxSeam },
+  { key: 'in_transit',        title: 'In Transit',             alt: 'Forwarded/Transfer', icon: FaPlaneDeparture },
+  { key: 'arrival',           title: 'Arrival & Clearance',    alt: 'Arrived/Clearing',   icon: FaWarehouse  },
+  { key: 'out_for_delivery',  title: 'Out for Delivery',       alt: 'Delivery Arranged',  icon: BsAirplane   },
+  { key: 'delivered',         title: 'Delivered',              alt: 'Complete',           icon: BsHouseCheck },
 ];
 
 const placeholders: Record<Mode, string> = {
@@ -58,6 +60,7 @@ const STATUS_ID_TO_STAGE: Record<number, number> = {
   3: 1, 12: 1, 14: 1,
   4: 2, 5: 2, 6: 2, 7: 2,
   8: 3, 9: 3, 10: 3,
+  16: 4,
 };
 
 const STATUS_NAME_TO_STAGE: Record<string, number> = {
@@ -195,9 +198,12 @@ const isLetterHyphenInvoice = (v: string) => /^[A-Za-z]+-[A-Za-z0-9-]+$/.test(v.
 // Keep legacy INV patterns like "INV-2025-3109" or "INV/2025-3109"
 const isInvPattern = (v: string) => /^INV[-/][A-Za-z0-9-]+$/i.test(v.trim());
 
+// Accept letter prefix followed by numbers, like "E91", "R0092", "OP0001"
+const isLetterNumberInvoice = (v: string) => /^[A-Za-z]+[0-9]+$/.test(v.trim());
+
 const isInvoiceQuery = (v: string) => {
   const s = v.trim();
-  return is3or6or9Digits(s) || isLetterHyphenInvoice(s) || isInvPattern(s);
+  return is3or6or9Digits(s) || isLetterHyphenInvoice(s) || isInvPattern(s) || isLetterNumberInvoice(s);
 };
 
 const fetchSmart = async (q: string) => {
@@ -263,8 +269,7 @@ const { stageIndex: currentIndex, displayLabel: displayStatus } = useMemo(
         const json = await fetchSmart(initialQuery.trim());
         setData(json);
       } catch (e: unknown) {
-        const msg = e instanceof Error ? e.message : typeof e === 'string' ? e : JSON.stringify(e);
-        setErr(msg || 'Failed to fetch');
+        setErr('Tracking number not found. Please check the number and try again.');
       } finally {
         setLoading(false);
       }
@@ -284,8 +289,7 @@ const { stageIndex: currentIndex, displayLabel: displayStatus } = useMemo(
       const json = await fetchSmart(q.trim());
       setData(json);
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : typeof e === 'string' ? e : JSON.stringify(e);
-      setErr(msg || 'Failed to fetch');
+      setErr('Tracking number not found. Please check the number and try again.');
     } finally {
       setLoading(false);
     }
@@ -396,8 +400,8 @@ const { stageIndex: currentIndex, displayLabel: displayStatus } = useMemo(
                         <p className="track-form-data-sub-heading">{s.alt}</p>
                       </div>
                       {isCurrent && (
-                        <div className="mt-2 rounded-full bg-emerald-500/10 px-3 py-1 text-[10px] font-semibold text-emerald-600">
-                          In progress
+                        <div className={`mt-2 rounded-full px-3 py-1 text-[10px] font-semibold ${i === STAGES.length - 1 ? 'bg-green-500/10 text-green-600' : 'bg-emerald-500/10 text-emerald-600'}`}>
+                          {i === STAGES.length - 1 ? 'Completed' : 'In progress'}
                         </div>
                       )}
                     </li>

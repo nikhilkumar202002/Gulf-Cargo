@@ -34,14 +34,11 @@
 }
 .footer-col ul li{
     color: #B3B3B3;
-    list-style-type: disc;
     font-size: 16px;
     padding: 4px;
     cursor: pointer;
 }
-.footer-col ul{
-    padding-left: 30px;
-}
+
 .footer-col ul li:hover{
     color: var(--secondary-color);
     transition: 4ms;
