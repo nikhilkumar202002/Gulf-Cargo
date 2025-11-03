@@ -188,8 +188,8 @@ function deriveStageFromApi(payload?: TrackResponse) {
 }
 
 /* --------------------------- Helpers (UPDATED) --------------------------- */
-// Accept exactly 3, 6, or 9 digits
-const is3or6or9Digits = (v: string) => /^(\d{3}|\d{6}|\d{9})$/.test(v.trim());
+// Accept numeric only strings
+const isNumericOnly = (v: string) => /^\d+$/.test(v.trim());
 
 // Accept letter prefix + hyphen, then one or more groups of letters/digits/hyphens
 // Examples: "A-12345", "KSA-2025-001"
@@ -198,12 +198,12 @@ const isLetterHyphenInvoice = (v: string) => /^[A-Za-z]+-[A-Za-z0-9-]+$/.test(v.
 // Keep legacy INV patterns like "INV-2025-3109" or "INV/2025-3109"
 const isInvPattern = (v: string) => /^INV[-/][A-Za-z0-9-]+$/i.test(v.trim());
 
-// Accept letter prefix followed by numbers, like "E91", "R0092", "OP0001"
-const isLetterNumberInvoice = (v: string) => /^[A-Za-z]+[0-9]+$/.test(v.trim());
+// Accept alphanumeric strings like "E91", "R0092", "RD123456"
+const isAlphaNumeric = (v: string) => /^[A-Za-z]+[0-9]+[A-Za-z0-9]*$/.test(v.trim());
 
 const isInvoiceQuery = (v: string) => {
   const s = v.trim();
-  return is3or6or9Digits(s) || isLetterHyphenInvoice(s) || isInvPattern(s) || isLetterNumberInvoice(s);
+  return isNumericOnly(s) || isLetterHyphenInvoice(s) || isInvPattern(s) || isAlphaNumeric(s);
 };
 
 const fetchSmart = async (q: string) => {

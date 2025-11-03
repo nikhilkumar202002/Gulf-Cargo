@@ -78,7 +78,7 @@ const normalizeKey = (s: string): string =>
 
 /* --------------------------- Input helpers ------------------------------ */
 // 3, 6, or 9 digits
-const is3or6or9Digits = (v: string) => /^(\d{3}|\d{6}|\d{9})$/.test(v.trim());
+const isNumericOnly = (v: string) => /^\d+$/.test(v.trim());
 
 // Letter prefix + hyphen + rest: "A-12345", "KSA-2025-001"
 const isLetterHyphenInvoice = (v: string) => /^[A-Za-z]+-[A-Za-z0-9-]+$/.test(v.trim());
@@ -86,12 +86,12 @@ const isLetterHyphenInvoice = (v: string) => /^[A-Za-z]+-[A-Za-z0-9-]+$/.test(v.
 // Invoice patterns: "INV-2025-3109", "INV/2025-3109"
 const isInvoicePattern = (v: string) => /^INV[-/][A-Za-z0-9-]+$/i.test(v.trim());
 
-// Accept letter prefix followed by numbers, like "E91", "R0092", "OP0001"
-const isLetterNumberInvoice = (v: string) => /^[A-Za-z]+[0-9]+$/.test(v.trim());
+// Accept letter prefix followed by numbers, like "E91", "R0092", "OP0001", "RD123456"
+const isAlphaNumeric = (v: string) => /^[A-Za-z]+[0-9]+[A-Za-z0-9]*$/.test(v.trim());
 
 // Any value that should go to /tracks
 const isInvoiceQuery = (v: string) =>
-  is3or6or9Digits(v) || isLetterHyphenInvoice(v) || isInvoicePattern(v) || isLetterNumberInvoice(v);
+  isNumericOnly(v) || isLetterHyphenInvoice(v) || isInvoicePattern(v) || isAlphaNumeric(v);
 
 // Allow 3+ chars
 const isValidCodeInput = (v: string) => /^[A-Za-z0-9\-/:]{3,}$/i.test(v.trim());
@@ -245,7 +245,7 @@ const TrackingForm: React.FC = () => {
         destination: data?.destination,
         destinationPort: data?.destination_port,
         updatedAt: data?.updated_at,
-        exceptionNote: undefined,
+        // exceptionNote: undefined,
         currentIndex: stageIndex,              // -1..4 (neutral when -1)
         displayStatus: displayLabel || undefined,
       };
@@ -288,7 +288,7 @@ const TrackingForm: React.FC = () => {
           {activeTab === 'invoice' ? (
             <input
               type="text"
-              placeholder="Invoice Number (INV-xxxx / INV/xxxx) or 3/6/9-digit bill no."
+              placeholder="Invoice or Bill Number (e.g., 12345, R0003, INV-xxxx)"
               className="tracking-input mb-6 block w-full bg-gray-100 rounded-xl px-5 py-3 text-lg text-gray-800 outline-none"
               value={invoiceNumber}
               onChange={(e) => setInvoiceNumber(e.target.value)}
@@ -308,7 +308,7 @@ const TrackingForm: React.FC = () => {
           {touched && !valid && (
             <div className="mb-4 text-sm text-red-600">
               {activeTab === 'invoice'
-                ? <>Enter a valid invoice (3/6/9 digits, <code>INV-</code>/<code>INV/</code>, or <code>LETTERS-XXXX</code>).</>
+                ? <>Enter a valid invoice or bill number (e.g., 12345, R0003, INV-xxxx).</>
                 : <>Enter a valid tracking code (min 3 chars). Allowed: letters, numbers, <code>-</code>, <code>/</code>, <code>:</code>.</>}
             </div>
           )}
