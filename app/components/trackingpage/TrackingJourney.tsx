@@ -54,6 +54,25 @@ const labelCopy: Record<Mode, string> = {
   tracking: 'Track by Tracking Number or Invoice',
 };
 
+/* --------------------- Status Display Normalization --------------------- */
+const RAW_TO_DISPLAY: Record<string, string> = {
+  'shipment received': 'Shipment Booked',
+  'shipment booked': 'Shipment Booked',
+  'pending': 'Shipment Booked',
+  'enquiry collected': 'Shipment Booked',
+  'shipment forwarded': 'In Transit',
+  'more tracking': 'In Transit',
+  'transfer': 'In Transit',
+  'shipment arrived': 'Arrival & Clearance',
+  'waiting for clearance': 'Arrival & Clearance',
+  'shipment on hold': 'Arrival & Clearance',
+  'shipment cleared': 'Arrival & Clearance',
+  'delivery arranged': 'Out for Delivery',
+  'shipment out for delivery': 'Out for Delivery',
+  'not delivered': 'Out for Delivery',
+  'delivered': 'Delivered',
+};
+
 /* ----------------------- Status → Stage Mapping ------------------------- */
 const STATUS_ID_TO_STAGE: Record<number, number> = {
   1: 0, 2: 0, 11: 0, 13: 0,
@@ -212,25 +231,6 @@ const fetchSmart = async (q: string) => {
     return fetchTrackingByInvoice(s);
   }
   return fetchTrackingData(s);
-};
-
-/* --------------------- Status Display Normalization --------------------- */
-const RAW_TO_DISPLAY: Record<string, string> = {
-  'shipment received': 'Shipment Booked',
-  'shipment booked': 'Shipment Booked',
-  'pending': 'Shipment Booked',
-  'enquiry collected': 'Shipment Booked',
-  'shipment forwarded': 'In Transit',
-  'more tracking': 'In Transit',
-  'transfer': 'In Transit',
-  'shipment arrived': 'Arrival & Clearance',
-  'waiting for clearance': 'Arrival & Clearance',
-  'shipment on hold': 'Arrival & Clearance',
-  'shipment cleared': 'Arrival & Clearance',
-  'delivery arranged': 'Out for Delivery',
-  'shipment out for delivery': 'Out for Delivery',
-  'not delivered': 'Out for Delivery',
-  'delivered': 'Delivered',
 };
 
 /* ------------------------- Public Component API ------------------------- */
