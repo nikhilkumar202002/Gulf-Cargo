@@ -61,8 +61,8 @@ const RAW_TO_DISPLAY: Record<string, string> = {
   'pending': 'Shipment Booked',
   'enquiry collected': 'Shipment Booked',
   'shipment forwarded': 'In Transit',
-  'more tracking': 'In Transit',
   'transfer': 'In Transit',
+  'more tracking': 'In Transit',
   'shipment arrived': 'Arrival & Clearance',
   'waiting for clearance': 'Arrival & Clearance',
   'shipment on hold': 'Arrival & Clearance',
@@ -75,12 +75,23 @@ const RAW_TO_DISPLAY: Record<string, string> = {
 
 /* ----------------------- Status → Stage Mapping ------------------------- */
 const STATUS_ID_TO_STAGE: Record<number, number> = {
-  1: 0, 2: 0, 11: 0, 13: 0,
-  3: 1, 12: 1, 14: 1,
-  4: 2, 5: 2, 6: 2, 7: 2,
-  8: 3, 9: 3, 10: 3,
-  16: 4,
+  1: 0, // Shipment received
+  2: 0, // Shipment booked
+  11: 0, // Pending
+  13: 0, // Enquiry collected
+  3: 1,  // Shipment forwarded
+  12: 1, // More Tracking
+  14: 1, // Transfer
+  4: 2,  // Shipment arrived
+  5: 2,  // Waiting for clearance
+  6: 2,  // Shipment on hold
+  7: 2,  // Shipment cleared
+  8: 3,  // Delivery arranged
+  9: 3,  // Shipment out for delivery
+  10: 3, // Not Delivered
+  15: 4, // DELIVERED
 };
+
 
 const STATUS_NAME_TO_STAGE: Record<string, number> = {
   'shipment received': 0, 'shipment booked': 0, 'pending': 0, 'enquiry collected': 0,
