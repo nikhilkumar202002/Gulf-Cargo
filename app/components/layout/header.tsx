@@ -85,7 +85,7 @@ const Header = () => {
 
         {/* Main Navbar */}
         <div className="navbar-main">
-          <div className="container mx-auto flex justify-between items-center h-16 px-4">
+          <div className="navbar-logo container mx-auto flex justify-between items-center h-16 px-4">
             <Image src="/Logo.png" width={120} height={40} alt='Gulf Cargo' priority />
 
             {/* Desktop */}

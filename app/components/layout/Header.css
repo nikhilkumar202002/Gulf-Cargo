@@ -50,6 +50,10 @@
         display: none;
     }
     .navbar-top-container, .navbar-main-container{
-        padding: 15px 17px !important;
+        padding: 8px 17px !important;
+    }
+    .navbar-logo img{
+        width: 100px !important;
+        height: auto !important;
     }
 }
