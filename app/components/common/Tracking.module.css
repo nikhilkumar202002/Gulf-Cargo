@@ -1,7 +1,7 @@
 .wrap {
   position: fixed;
   right: 28px;
-  bottom: 156px;              /* above WhatsApp (~88) & BackToTop (~24) */
+  bottom: 220px;              /* above WhatsApp (~88) & BackToTop (~24) */
   z-index: 1000;
 }
 
@@ -88,7 +88,7 @@
 
 /* mobile */
 @media (max-width: 640px) {
-  .wrap { right: 16px; bottom: 148px; }
+  .wrap { right: 16px; bottom: 213px; }
   .btn  { --track-size: 52px; }
   .icon { font-size: 22px; }
 }

@@ -58,3 +58,18 @@ body {
     height: 52px;
   }
 }
+
+[dir="rtl"] {
+    text-align: right;
+}
+
+/* Flip arrow icons in RTL mode */
+[dir="rtl"] .hero-arrow svg, 
+[dir="rtl"] .IoArrowForward {
+    transform: scaleX(-1);
+}
+
+/* Ensure header list flips correctly */
+[dir="rtl"] .navbar-main-right {
+    flex-direction: row-reverse;
+}

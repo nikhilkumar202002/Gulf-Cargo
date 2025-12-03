@@ -34,3 +34,130 @@
     font-weight: 550;
     text-decoration: none !important;
 }
+
+.wrap {
+  position: fixed;
+  right: 28px;
+  bottom: 156px;              /* Positioned above WhatsApp (~88px) & BackToTop (~24px) */
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn {
+  /* Local variables for easy customization */
+  --btn-size: 50px;
+  --btn-bg: rgb(38, 34, 98);          /* Gulf Cargo Red */
+  --btn-fg: #ffffff;
+  --shadow: 0 10px 30px rgba(0,0,0,.25);
+
+  width: var(--btn-size);
+  height: var(--btn-size);
+  border: none;
+  border-radius: 50%;
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+  position: relative;
+  outline: none;
+}
+
+.btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 36px rgba(38, 34, 98, 0.514); /* Red glow on hover */
+  background: #d91b19; /* Slightly darker red */
+}
+
+.icon {
+  font-size: 24px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Pulse Ring Animation */
+.btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  box-shadow: 0 0 0 0 rgba(237, 38, 36, 0.5);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(237, 38, 36, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 15px rgba(237, 38, 36, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(237, 38, 36, 0);
+  }
+}
+
+/* Tooltip Styling */
+.tooltip {
+  position: absolute;
+  right: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%) translateX(10px);
+  background: #1e1e1e;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,.15);
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* Tooltip Arrow */
+.tooltip::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -5px;
+  transform: translateY(-50%);
+  border-width: 5px 0 5px 5px;
+  border-style: solid;
+  border-color: transparent transparent transparent #1e1e1e;
+}
+
+/* Show Tooltip on Hover */
+.btn:hover + .tooltip,
+.btn:focus-visible + .tooltip {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 640px) {
+  .wrap {
+    right: 16px;
+    bottom: 148px; /* Adjusted to fit nicely on mobile screens */
+  }
+  
+  .btn {
+    --btn-size: 52px; /* Slightly larger touch target */
+  }
+  
+  .icon {
+    font-size: 22px;
+  }
+}

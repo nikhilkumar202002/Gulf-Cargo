@@ -38,15 +38,66 @@ const Footer = () => {
               </div>
               <div className="footer-col">
                 <div className='footer-menu-heading'>Services</div>
-                <ul className="space-y-2">
-  <li><Link href="/services#sea-freight" className='flex gap-2 items-center'><span className='footer-menu-list-icon'><IoMdArrowDroprightCircle/></span>Sea Freight Services</Link></li>
-  <li><Link href="/services#air-freight" className='flex gap-2 items-center'><span className='footer-menu-list-icon'><IoMdArrowDroprightCircle/></span>Air Freight Solutions</Link></li>
-  <li><Link href="/services#land-transportation" className='flex gap-2 items-center'><span className='footer-menu-list-icon'><IoMdArrowDroprightCircle/></span>Land Transportation</Link></li>
-  <li><Link href="/services#warehouse-distribution" className='flex gap-2 items-center'><span className='footer-menu-list-icon'><IoMdArrowDroprightCircle/></span>Warehousing & Distribution</Link></li>
-  <li><Link href="/services#customs-clearance-documentation" className='flex gap-2 items-center'><span className='footer-menu-list-icon'><IoMdArrowDroprightCircle/></span>Customs Clearance & Documentation</Link></li>
-  <li><Link href="/services#project-logistics-solutions" className='flex gap-2 items-center'><span className='footer-menu-list-icon'><IoMdArrowDroprightCircle/></span>Project Logistics Solutions</Link></li>
-  <li><Link href="/services#supply-chain-consulting" className='flex gap-2 items-center'><span className='footer-menu-list-icon'><IoMdArrowDroprightCircle/></span>Supply Chain Consulting</Link></li>
+              <ul className="space-y-2">
+
+  <li>
+    <Link href="/services#worldwide-air-cargo-services" className="flex gap-2 items-center">
+      <span className='footer-menu-list-icon'><IoMdArrowDroprightCircle/></span>
+      Worldwide Air Cargo Services
+    </Link>
+  </li>
+
+  <li>
+    <Link href="/services#door-to-door-services" className="flex gap-2 items-center">
+      <span className='footer-menu-list-icon'><IoMdArrowDroprightCircle/></span>
+      Door-to-Door Services
+    </Link>
+  </li>
+
+  <li>
+    <Link href="/services#domestic-delivery-saudi-arabia" className="flex gap-2 items-center">
+      <span className='footer-menu-list-icon'><IoMdArrowDroprightCircle/></span>
+      Domestic Delivery in Saudi Arabia
+    </Link>
+  </li>
+
+  <li>
+    <Link href="/services#house-shifting-and-packing" className="flex gap-2 items-center">
+      <span className='footer-menu-list-icon'><IoMdArrowDroprightCircle/></span>
+      House Shifting & Packing
+    </Link>
+  </li>
+
+  <li>
+    <Link href="/services#gcc-door-delivery" className="flex gap-2 items-center">
+      <span className='footer-menu-list-icon'><IoMdArrowDroprightCircle/></span>
+      GCC Door Delivery
+    </Link>
+  </li>
+
+  <li>
+    <Link href="/services#commercial-customs-clearance" className="flex gap-2 items-center">
+      <span className='footer-menu-list-icon'><IoMdArrowDroprightCircle/></span>
+      Commercial Customs Clearance
+    </Link>
+  </li>
+
+  <li>
+    <Link href="/services#container-services-providing" className="flex gap-2 items-center">
+      <span className='footer-menu-list-icon'><IoMdArrowDroprightCircle/></span>
+      Container Services & Providing
+    </Link>
+  </li>
+
+  <li>
+    <Link href="/services#warehouse-and-storage" className="flex gap-2 items-center">
+      <span className='footer-menu-list-icon'><IoMdArrowDroprightCircle/></span>
+      Warehouse & Storage Facilities
+    </Link>
+  </li>
+
 </ul>
+
               </div>
               <div className="footer-col">
                 <div className='footer-menu-heading'>Contact Information</div>

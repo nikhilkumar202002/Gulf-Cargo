@@ -53,47 +53,31 @@ function ContactUs() {
               </motion.p>
             </div>
 
-          <motion.div 
-  className="contact-icon-list mt-4 flex flex-col gap-5" 
-  variants={staggerParent}
->
-    {/* 1. Address Section - Changed to items-start for multi-line text alignment */}
-    <motion.div variants={fadeUp} whileHover={{ x: 4 }}>
-      <Link className='flex items-start gap-4' href="https://www.google.com/maps/dir//Al+Oud,+Hamad+Ibn+Laaboun,+2912,+Al+Oud,+Riyadh+12665,+Riyadh+12211,+Saudi+Arabia/@24.6196126,46.6436924,12z/data=!4m8!4m7!1m0!1m5!1m1!1s0x3e2fa721c5182035:0x6735d5d86726830a!2m2!1d46.726094!2d24.619635?entry=ttu&g_ep=EgoyMDI1MTAwMS4wIKXMDSoASAFQAw%3D%3D">
-        {/* Added mt-1 to align icon with the first line of text */}
-        <div className='contact-icons flex-shrink-0 mt-1'>
-          <FaLocationDot/> 
-        </div>
-        <h4 className='contact-lists leading-relaxed'>
-          Gulf cargo LLC, Al Oud, Hamad Ibn Laaboun, 2912, Al Oud, Riyadh 12665, Riyadh 12211, Saudi Arabia
-        </h4>
-      </Link>
-    </motion.div>
+            <motion.div className="contact-icon-list mt-4 space-y-3" variants={staggerParent}>
+              <motion.div variants={fadeUp} whileHover={{ x: 4 }}>
+                <Link className='flex items-center gap-4' href="https://www.google.com/maps/dir//Al+Oud,+Hamad+Ibn+Laaboun,+2912,+Al+Oud,+Riyadh+12665,+Riyadh+12211,+Saudi+Arabia/@24.6196126,46.6436924,12z/data=!4m8!4m7!1m0!1m5!1m1!1s0x3e2fa721c5182035:0x6735d5d86726830a!2m2!1d46.726094!2d24.619635?entry=ttu&g_ep=EgoyMDI1MTAwMS4wIKXMDSoASAFQAw%3D%3D">
+                <span className='contact-icons'><FaLocationDot/></span>
+                <h4 className='contact-lists'>Gulf Cargo LLC, KSA</h4>
+                </Link>
+                
+              </motion.div>
 
-    {/* 2. Phone Section - Removed py-1 */}
-    <motion.div className="flex items-center gap-4" variants={fadeUp} whileHover={{ x: 4 }}>
-      <span className='contact-icons flex-shrink-0'><MdPhoneCallback/></span>
-      <Link href="tel:+966547619393">
-        <h4 className='contact-lists'>+966 54 761 9393</h4>
-      </Link> 
-    </motion.div>
+              <motion.div className="flex items-center gap-4 py-3" variants={fadeUp} whileHover={{ x: 4 }}>
+                <span className='contact-icons'><MdPhoneCallback/></span>
+               <Link href="tel:+966547619393"><h4 className='contact-lists'>+966 54 761 9393</h4></Link> 
+              </motion.div>
 
-    {/* 3. Email Section */}
-    <motion.div className="flex items-center gap-4" variants={fadeUp} whileHover={{ x: 4 }}>
-      <span className='contact-icons flex-shrink-0'><IoMailUnreadSharp/></span>
-      <Link href="mailto:info@gulfcargoksa.com">
-        <h4 className='contact-lists'>info@gulfcargoksa.com</h4>
-      </Link>
-    </motion.div>
+              <motion.div className="flex items-center gap-4" variants={fadeUp} whileHover={{ x: 4 }}>
+                <span className='contact-icons'><IoMailUnreadSharp/></span>
+                <Link href="mailto:info@gulfcargoksa.com"><h4 className='contact-lists'>info@gulfcargoksa.com</h4></Link>
+              </motion.div>
 
-    {/* 4. Clock Section - Removed py-3 */}
-    <motion.div className="flex items-center gap-4" variants={fadeUp} whileHover={{ x: 4 }}>
-      <span className='contact-icons flex-shrink-0'><PiClockCountdownFill/></span>
-      <h4 className='contact-lists'>Sunday – Saturday, 24/7 Service</h4>
-    </motion.div>
-
-</motion.div>
-</motion.div>
+              <motion.div className="flex items-center gap-4 py-3" variants={fadeUp} whileHover={{ x: 4 }}>
+                <span className='contact-icons'><PiClockCountdownFill/></span>
+                <h4 className='contact-lists'>Sunday – Saturday, 24/7 Service</h4>
+              </motion.div>
+            </motion.div>
+          </motion.div>
 
           <motion.div className="contact-col" variants={fadeUp}>
             <motion.div className="contact-form" variants={fadeIn}>

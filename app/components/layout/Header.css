@@ -5,7 +5,7 @@
 .navbar-top{
     background-color: var(--primary-color);
     color: white;
-    padding: 8px 0px;
+    padding: 4px 0px;
 }
 .navbar-container{
     font-family: "DM Sans";
@@ -44,7 +44,95 @@
 .navbar-main-btn button:active{
     background-color: var(--primary-color);
 }
+.header-contact-btn{
+    border-radius: 15px;
+}
 
+.VIpgJd-ZVi9od-ORHb-OEVmcd{
+    display: none !important;
+}
+.goog-te-banner-frame.skiptranslate,
+.goog-te-banner-frame,
+iframe.goog-te-banner-frame {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+}
+body {
+    top: 0px !important;
+    position: static !important;
+}
+
+/* 2. BUTTON CONTAINER */
+#google_translate_element {
+    display: inline-block !important;
+    vertical-align: middle !important;
+}
+
+/* 3. THE BUTTON ITSELF (Force 1 Row) */
+.goog-te-gadget-simple {
+    background-color: #f8f9fa !important;
+    border: 1px solid #e5e7eb !important;
+    padding: 6px 12px !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    
+    /* FORCE ROW LAYOUT */
+    display: inline-flex !important;
+    flex-direction: row !important; 
+    align-items: center !important;
+    justify-content: space-between !important;
+    white-space: nowrap !important; /* Prevents text from dropping to next line */
+    
+    min-width: 110px !important; 
+    max-width: 150px !important;
+    height: 28px !important;
+    text-decoration: none !important;
+}
+
+/* 4. TEXT STYLE */
+.goog-te-gadget-simple .goog-te-menu-value {
+    display: flex !important;
+    align-items: center !important;
+    color: #1e1e1e !important;
+    font-family: 'DM Sans', sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+}
+
+/* 5. HIDE JUNK (Icons, Vertical Pipes) */
+.goog-te-gadget-icon { display: none !important; }
+.goog-te-gadget-simple .goog-te-menu-value span[style*="border-left"] { display: none !important; }
+.goog-te-gadget-simple .goog-te-menu-value span img { display: none !important; }
+
+/* 6. ARROW ICON */
+.goog-te-gadget-simple .goog-te-menu-value span:last-child {
+    font-size: 0 !important;
+    margin-left: 8px !important; /* Space between Text and Arrow */
+    width: 10px !important;
+    height: 10px !important;
+    opacity: 1 !important;
+    display: block !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23262262' stroke-width='3'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* 7. HOVER STATE */
+.goog-te-gadget-simple:hover {
+    border-color: #ED2624 !important;
+    background-color: #ffffff !important;
+}
+
+/* 8. RTL FIX (Keep it in 1 row for Arabic too) */
+[dir="rtl"] .goog-te-gadget-simple .goog-te-menu-value span:last-child {
+    margin-left: 0 !important;
+    margin-right: 8px !important;
+}
+a.VIpgJd-ZVi9od-xl07Ob-lTBxed {
+    display: flex;
+}
 @media (max-width: 1080px) {
     .navbar-top{
         display: none;
@@ -53,7 +141,10 @@
         padding: 8px 17px !important;
     }
     .navbar-logo img{
-        width: 100px !important;
+        width: 70px !important;
         height: auto !important;
+    }
+    .navbar-main{
+        padding: 8px 0px;
     }
 }

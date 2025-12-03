@@ -5,6 +5,7 @@ import Footer from "./components/layout/footer";
 import BackToTop from "./components/common/BackToTop";
 import WhatsAppFab from "./components/common/WhatsAppFab";
 import Tracking from "./components/common/Tracking";
+import CallButton from "./components/common/CallButton";
 
 export const metadata: Metadata = {
   title: "Gulf Cargo | Freight Forwarding & Logistics Services in GCC",
@@ -27,6 +28,7 @@ export default function RootLayout({
       <main>{children}</main>
        <Footer/>
        <WhatsAppFab />
+       <CallButton/>
        <Tracking/>
        <BackToTop/>
       </body>

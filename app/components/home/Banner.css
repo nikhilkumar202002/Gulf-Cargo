@@ -7,68 +7,127 @@
     font-family: "Dm Sans";
     text-align: left;
     width: 100%;
-    
-    h1 {
-        font-size: 36px;
-        font-weight: 700;
-        line-height: 50px;
-        color: #FFFFFF;
-        margin-bottom: 15px;
-    }
-    p {
-        font-size: 16px;
-        font-weight: 400;
-        line-height: 24px;
-        color: #F2F2F2;
-        margin-bottom: 25px;
-    }
-    a {
-        display: inline-block;
-        padding: 12px 24px;
-        background-color: var(--secondary-color);
-        color: #FFFFFF;
-        text-decoration: none;
-        border-radius: 4px;
-        font-weight: 500;
-        transition: background-color 0.3s ease;
-
-        &:hover {
-            background-color: #FFFFFF;
-            color: var(--secondary-color);
-        }
-    }
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: start;
 }
 
+.main-banner-content h1 {
+    font-size: 48px;
+    line-height: 55px !important;
+    font-weight: 700;
+    line-height: 45px;
+    color: #FFFFFF;
+}
+
+.main-banner-content p {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 22px;
+    color: #F2F2F2;
+    margin-bottom: 25px;
+}
+
+.main-banner-content a {
+    display: inline-block;
+    padding: 10px 24px;
+    background-color: var(--secondary-color);
+    color: #FFFFFF;
+    text-decoration: none;
+    border-radius: 15px;
+    transition: background-color 0.3s ease;
+    font-size: 16px;
+    font-weight: 550;
+}
+
+.main-banner-content a:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* --- UPDATED CONTAINER --- */
 .main-banner-inner {
     padding: 30px 50px;
-    border-radius: 30px; /* This determines the curve */
-    min-height: 550px; 
+    border-radius: 25px; 
+    min-height: 650px; 
     display: flex;
     align-items: center;
-    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("../../../public/Banners/main-banner-1.webp");
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
+    
+    /* CRITICAL CHANGES FOR SLIDESHOW: */
+    position: relative; /* Allows absolute positioning of images inside */
+    overflow: hidden;   /* Clips the zooming images to the rounded corners */
+    isolation: isolate; /* Creates a new stacking context */
+    background-image: none; /* Remove static image */
+    background-color: #000; /* Fallback color */
 }
 
+/* --- SLIDESHOW STYLES --- */
+.banner-slideshow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* Puts images behind text */
+}
+
+.banner-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out; /* Smooth crossfade */
+    transform: scale(1);
+}
+
+.banner-slide.active {
+    opacity: 1;
+    animation: kenBurns 18s ease-out infinite alternate;
+}
+
+/* The Zoom Animation */
+@keyframes kenBurns {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.15); }
+}
+
+/* Dark Overlay (Replaces the linear-gradient you had before) */
+.banner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
+    z-index: 1; 
+}
+.main-banner{
+    margin-top: 72px;
+}
+
+/* --- MOBILE RESPONSIVE --- */
 @media (max-width: 1080px) {
     .main-banner-inner{
-        /* REMOVED: border-radius: none !important; */
-        /* Now it will keep the 30px radius from above */
         padding: 50px 17px;
     }
-    .main-banner-content{
+    .main-banner-content {
         text-align: left;
-        h1 {
-            font-size: 32px;
-            line-height: 40px;
-        }
-        p {
-            font-size: 14px;
-            line-height: 20px;
-        }
-        a {
-            padding: 10px 20px;
-        }
+    }
+    .main-banner-content h1 {
+        font-size: 32px;
+        line-height: 40px;
+    }
+    .main-banner-content p {
+        font-size: 14px;
+        line-height: 20px;
+    }
+    .main-banner-content a {
+        padding: 10px 20px;
+    }
+    .main-banner{
+        margin-top: 32px;
     }
 }

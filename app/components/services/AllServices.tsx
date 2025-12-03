@@ -54,7 +54,7 @@ const AllServices: React.FC = () => {
                     alt={service.highlight || service.title}
                     width={1200}
                     height={800}
-                    className="h-auto w-full"
+                    className="h-auto w-full rounded-2xl"
                     sizes="(min-width: 768px) 50vw, 100vw"
                     priority={index === 0}
                   />

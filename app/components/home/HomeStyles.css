@@ -186,7 +186,7 @@
 .our-service-header{
     font-family: "Dm Sans";
     text-align: center;
-    padding-bottom: 40px;
+    padding-bottom: 20px;
     h1{
         font-size: 30px;
         font-weight: 600;
@@ -246,11 +246,64 @@
     background-color: var(--secondary-color);
 }
 .our-service-card{
-    padding: 40px;
-    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-    border-radius: 20px;
+background: #fff;
+  border-radius: 18px;
+  overflow: hidden;
+  padding: 20px;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  border: 1px solid #e6e6e6;
+}
+.our-service-btn{
+    padding: 10px 25px;
+    background-color: var(--secondary-color);
+    border-radius: 15px;
+    color: white;
+    font-size: 16px;
+    font-family: "Dm Sans";
+    font-weight: 500;
+    margin-top: 30px;
+    width: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.our-service-card-image {
+    width: 100%;
+    height: 250px;
+    margin-bottom: 15px;
+    /* REQUIRED: This prevents the image from spilling out when scaled */
+    overflow: hidden; 
+    /* Move border-radius here to clip the corners properly */
+    border-radius: 15px; 
 }
 
+.our-service-card-image img {
+    width: 100%; /* Ensures image fills the container width */
+    height: 100%; /* Matches container height */
+    object-fit: cover;
+    /* Smoothness settings */
+    transition: transform 0.5s ease;
+}
+
+/* The Hover Effect */
+.our-service-card-image:hover img {
+    transform: scale(1.1); /* Scales up by 10% */
+}
+
+/* Swiper Pagination Customization */
+.swiper-pagination-bullet {
+    background-color: #ccc; /* Inactive color */
+    opacity: 1;
+    width: 10px;
+    height: 10px;
+}
+
+.swiper-pagination-bullet-active {
+    background-color: #ff6b00; /* Your Brand Color (Change this) */
+    width: 25px; /* Makes the active dot elongated */
+    border-radius: 5px;
+    transition: width 0.3s ease;
+}
 /* about us */
 .about-section{
     padding: 0px 0px 100px;
@@ -437,12 +490,10 @@
     padding: 100px 0px;
 }
 .contact-heading{
-    font-size: 45px;
+    font-size: 35px;
     font-family: "Dm Sans";
     font-weight: 600;
     color: #1e1e1e;
-    line-height: 50px;
-    padding-bottom: 10px;
 }
 .contact-hightlight{
     color: var(--primary-color);
@@ -470,7 +521,7 @@
     font-family: "Inter";
 }
 .contact-icon-list{
-    padding-top: 30px;
+    padding-top: 10px;
 }
 .contact-form-row label{
     font-family: "Dm Sans";
@@ -486,7 +537,7 @@
 }
 
 .contact-form{
-    padding: 50px;
+    padding: 30px;
     border-radius: 20px;
     box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }

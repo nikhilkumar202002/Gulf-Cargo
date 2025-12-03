@@ -1,25 +1,59 @@
-
-import { ImAirplane } from "react-icons/im";
-import { RiShip2Fill } from "react-icons/ri";
-import { FaTruckMoving } from "react-icons/fa";
+import Service1 from "../../../public/Service/Worldwide-Air-Cargo-Services.webp";
+import Service2 from "../../../public/Service/Door-to-Door-Services.webp";
+import Service3 from "../../../public/Service/Domestic-Delivery-in-Saudi-Arabia.webp";
+import Service4 from "../../../public/Service/House-Shifting-&-Packing.webp";
+import Service5 from "../../../public/Service/GCC-Door-Delivery.webp";
+import Service6 from "../../../public/Service/Commercial-Customs-Clearance.webp";
+import Service7 from "../../../public/Service/Container-Services-&-Providing.webp";
+import Service8 from "../../../public/Service/Warehouse-&-Storage-Facilities.webp";
 
 export const servicesData = [
   {
-    icon: <ImAirplane />,
-    title: "Air Freight",
+    title: "Worldwide Air Cargo Services",
+    image: Service1,
     description:
-      "Fast and reliable air cargo solutions to ensure your shipments reach their destination on time, anywhere in the world. Ideal for urgent deliveries with complete tracking and handling care."
+      "Fast and secure international air cargo services ensuring timely delivery across major global destinations."
   },
   {
-    icon: <RiShip2Fill />,
-    title: "Sea Freight",
+    title: "Door to Door Services",
+    image: Service2,
     description:
-      "Cost-effective and efficient sea cargo services for bulk shipments, connecting major ports across the GCC and beyond with safe and timely delivery."
+      "Convenient pickup and delivery service directly from your location to the receiver’s doorstep with complete handling."
   },
   {
-    icon: <FaTruckMoving />,
-    title: "Road Transport",
+    title: "Domestic Delivery in Saudi Arabia",
+    image: Service3,
     description:
-      "Flexible and dependable road transportation for domestic and cross-border deliveries, offering scheduled and express options to meet your business needs."
+      "Quick and reliable parcel delivery across all regions of Saudi Arabia with safe handling and timely updates."
+  },
+  {
+    title: "House Shifting & Packing",
+    image: Service4,
+    description:
+      "Professional house relocation and packing services ensuring safe movement of all your household items."
+  },
+  {
+    title: "GCC Door Delivery",
+    image: Service5,
+    description:
+      "Reliable door delivery to all GCC countries including UAE, Oman, Qatar, Bahrain, and Kuwait with customs assistance."
+  },
+  {
+    title: "Commercial Customs Clearance",
+    image: Service6,
+    description:
+      "Expert customs clearance services for commercial shipments ensuring smooth, fast, and hassle-free processing."
+  },
+  {
+    title: "Container Services & Providing",
+    image: Service7,
+    description:
+      "Flexible and secure container solutions for bulk cargo and commercial goods, suitable for international shipping."
+  },
+  {
+    title: "Warehouse & Storage Facilities",
+    image: Service8,
+    description:
+      "Secure, spacious, and monitored warehouses for short-term and long-term storage of goods."
   }
 ];

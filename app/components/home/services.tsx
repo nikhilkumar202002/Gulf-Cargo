@@ -1,23 +1,25 @@
 "use client";
+
 import React from "react";
 import { motion } from "framer-motion";
 import { servicesData } from "../data/servicesData";
 import "./HomeStyles.css";
-import { IoArrowForward } from "react-icons/io5";
-import Link from "next/link";
+import { GoArrowUpRight } from "react-icons/go";
+import Image from "next/image";
 
-const container = {
-  hidden: { opacity: 0, y: 12 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { when: "beforeChildren", staggerChildren: 0.08, duration: 0.45, ease: "easeOut" },
-  },
-};
+// Import Swiper React components
+import { Swiper, SwiperSlide } from 'swiper/react';
 
-const card = {
-  hidden: { opacity: 0, y: 16, scale: 0.98 },
-  show:   { opacity: 1, y: 0, scale: 1, transition: { duration: 0.35, ease: "easeOut" } },
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/pagination';
+
+// Import required modules
+import { Pagination, Autoplay } from 'swiper/modules';
+
+const cardVariant = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
 };
 
 const Services = () => {
@@ -34,43 +36,65 @@ const Services = () => {
           </div>
 
           <div className="our-service-wrapper">
-            <motion.div
-              className="our-service-cards grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
-              variants={{container}}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, amount: 0.2 }}
+            <Swiper
+              modules={[Pagination, Autoplay]}
+              spaceBetween={15}
+              slidesPerView={1}
+              loop={true}
+              pagination={{ clickable: true, dynamicBullets: true }}
+              autoplay={{
+                delay: 3000,
+                disableOnInteraction: false,
+              }}
+              breakpoints={{
+                640: { slidesPerView: 2, spaceBetween: 20 },
+                1024: { slidesPerView: 3, spaceBetween: 15 },
+              }}
+              className="mySwiper"
+              style={{    
+                paddingTop:"30px",
+                paddingBottom: "60px", 
+
+              }} 
             >
               {servicesData.map((service, index) => (
-                <motion.div
-                  key={index}
-                  className="our-service-card"
-                  variants={{card}}
-                  whileHover={{ y: -4 }}
-                  whileTap={{ scale: 0.98 }}
-                  transition={{ type: "spring", stiffness: 260, damping: 20 }}
-                >
-                  <div className="our-service-card-header flex items-center gap-3">
-                    <motion.span
-                      whileHover={{ scale: 1.06, rotate: 1.5 }}
-                      transition={{ type: "spring", stiffness: 300, damping: 16 }}
-                    >
-                      {service.icon}
-                    </motion.span>
-                    <h1>{service.title}</h1>
-                  </div>
-                  <div className="our-service-card-descrption">
-                    <p>{service.description}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          </div>
+                <SwiperSlide key={index}>
+                  <motion.div
+                    className="our-service-card"
+                    variants={cardVariant}
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true }}
+                    whileHover={{ y: -5 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                    style={{ height: "100%", display: "flex", flexDirection: "column" }} 
+                  >
+                    {/* The IMAGE container has overflow:hidden for the zoom effect */}
+                    <div className="our-service-card-image">
+                      <Image 
+                        src={service.image} 
+                        alt={service.title} 
+                        width={500} 
+                        height={300}
+                        style={{ width: '100%', height: '100%' }}
+                      />
+                    </div>
 
-          <div className="our-service-card-btn">
-            <Link className="our-service-card-btn gap-2" href="/services" target="_blank" rel="noopener noreferrer">
-              View More <IoArrowForward/>
-            </Link>
+                    <div className="our-service-card-header flex items-center gap-3">
+                      <h1>{service.title}</h1>
+                    </div>
+                    <div className="our-service-card-descrption">
+                      <p>{service.description}</p>
+                    </div>
+                    <div className="our-service-btn mt-auto">
+                      <a href="#" className="flex items-center gap-2">
+                        Read More <span><GoArrowUpRight /></span>
+                      </a>
+                    </div>
+                  </motion.div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
           </div>
         </div>
       </section>
