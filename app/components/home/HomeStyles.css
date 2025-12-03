@@ -246,7 +246,7 @@
     background-color: var(--secondary-color);
 }
 .our-service-card{
-background: #fff;
+  background: #fff;
   border-radius: 18px;
   overflow: hidden;
   padding: 20px;

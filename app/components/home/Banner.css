@@ -53,8 +53,6 @@
     min-height: 650px; 
     display: flex;
     align-items: center;
-    
-    /* CRITICAL CHANGES FOR SLIDESHOW: */
     position: relative; /* Allows absolute positioning of images inside */
     overflow: hidden;   /* Clips the zooming images to the rounded corners */
     isolation: isolate; /* Creates a new stacking context */

@@ -147,6 +147,52 @@
 .tracking-journey-section{
     padding: 80px 0px;
 }
+
+.tracking-faq-accordian-items{
+    padding: 30px;
+}
+.tracking-faq-accordian-header span{
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background-color: var(--primary-color);
+    font-size: 22px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.tracking-faq-accordian-header h3{
+    font-size: 17px;
+    font-family: "Dm Sans";
+    font-weight: 550;
+    color: black;
+}
+.tracking-faq-accordian-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* padding: 0px 0px 20px; */
+}
+.tracking-faq-accordian-content{
+    padding: 20px 0px;
+    font-size: 16px;
+    font-weight: 400;
+    font-family: "Inter";
+    color: #4c4c4c;
+}
+.tracking-faq-accordian-items{
+    border: 1px solid #d6d6d6;
+    border-radius: 25px;
+}
+.tracking-faq-container{
+    margin-top: 25px;
+}
+.tracking-faq-accordian{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
 @media (max-width:1080px) {
     .coperative-locations,.about-content,.mission-vision{
         padding: 80px 17px;

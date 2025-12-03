@@ -1,0 +1,95 @@
+:root {
+  --primary-color: #262262;
+  --secondary-color: #ED2624;
+}
+.order-page-flex{
+    margin-top: 72px;
+}
+.order-page-details-header h3{
+    font-size: 15px;
+    font-family: "Dm Sans";
+    font-weight: 600;
+}
+.order-details-header{
+    background-color: #8ce4ff4d;
+    padding: 15px;
+    border-radius: 15px;
+    margin-top: 20px;
+}
+.order-details-header h2{
+    font-size: 24px;
+    font-family: "Dm Sans";
+    font-weight: 600;
+}
+.order-details-header h3{
+    font-size: 16px;
+    font-family: "Dm Sans";
+    font-weight: 500;
+}
+.order-page-tracking-icon{
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    background-color: rgb(228, 228, 228);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.order-page-tracking-inner{
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.tracking-status h5{
+    font-size: 15px;
+    font-weight: 500;
+    font-family: "Dm Sans";
+}
+.order-page-tracking-outer{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.order-page-trackings{
+    padding: 20px;
+    border-radius: 15px;
+    margin: 15px 0px 15px;
+}
+.order-page-contact{
+    line-height: 22px;
+}
+.order-page-contact h3{
+    font-size: 15px;
+    font-weight: 600;
+    color: #1e1e1e;
+    font-family: "Dm Sans";
+}
+.order-page-contact p a{
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--secondary-color);
+}
+.order-page{
+    padding: 50px 0px 100px;
+}
+.order-page-status-details{
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.status-details-icon{
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.status-details-header h5{
+    font-size: 14px;
+    font-family: "Dm Sans";
+    font-weight: 500;
+}
+.order-page-trackings{
+    background-color: rgb(243, 243, 243);
+}

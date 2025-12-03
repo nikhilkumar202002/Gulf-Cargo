@@ -7,7 +7,7 @@ const ServicesBanner = () => {
     <>
         <section className="service-page-banner">
             <div className="service-page-main-container container relative bg-[url('/Banners/service-banner.webp')] bg-cover bg-center bg-no-repeat ">
-                <div className="service-page-container container-small">
+                <div className="service-page-container px-15">
                     <h1 className='service-banner-content-heading'>Gulf Cargo - Comprehensive Logistics Solutions</h1>
                     <p className='service-banner-content-description'>Gulf Cargo stands as your premier logistics and cargo transportation partner across the Gulf region, delivering innovative solutions that move your business forward. With extensive experience in international freight forwarding, supply chain management, and comprehensive logistics services, we ensure your cargo reaches its destination safely, efficiently, and on time.</p>
                     <div className="about-content-breadcrumbs">
