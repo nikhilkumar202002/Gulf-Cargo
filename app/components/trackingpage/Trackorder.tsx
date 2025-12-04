@@ -1,6 +1,7 @@
 "use client"
 
 import OrderForm from "./OrderForm"
+import ContactCard from "./ContactCard"
 import Faq from "./Faq"
 
 const Trackorder = () => {
@@ -12,6 +13,9 @@ const Trackorder = () => {
                     <div className="track-order-form-faq">
                         <OrderForm/>
                         <Faq/>
+                    </div>
+                    <div className="track-order-faq-contact">
+                        <ContactCard/>
                     </div>
                 </div>
             </div>

@@ -2,7 +2,9 @@
   --primary-color: #262262;
   --secondary-color: #ED2624;
 }
-.about-page-container{
+
+/* --- Banner & About Section (Used in TrackpageBanner.tsx) --- */
+.about-page-container {
     border-radius: 20px !important; 
     overflow: hidden !important;
     height: 500px !important;
@@ -21,11 +23,11 @@
    z-index: 1;
    pointer-events: none;
 }
-.about-content-container{
-    position: relative; /* Needed for z-index to apply */
+.about-content-container {
+    position: relative;
     z-index: 4;
 }
-.about-content-page-heading{
+.about-content-page-heading {
     font-size: 45px !important;
     font-family: "Dm Sans";
     font-weight: 600;
@@ -33,7 +35,7 @@
     width: 50%;
     line-height: 56px;
 }
-.about-content-page-description{
+.about-content-page-description {
     font-size: 14px;
     font-family: "Inter";
     font-weight: 500;
@@ -41,68 +43,15 @@
     line-height: 20px;
     width: 50%;
 }
-.about-content-breadcrumbs{
+.about-content-breadcrumbs {
     padding-top: 20px;
 }
-.about-content-left-heading,.coperative-loactions-heading{
-    font-size: 30px;
-    font-weight: 600;
-    font-family: "Dm Sans";
-}
-.about-content-left-heading-hightlight,.coperative-loactions-highlight{
-    color: var(--secondary-color) !important;
-}
-.about-content-left-description{
-    font-family: "Inter";
-    font-size: 16px;
-    font-weight: 550;
-    color: #1e1e1e;
-}
-.about-content-background{
-    width: 100%;
-    height: 500px;
-    background-color: var(--primary-color);
-    border-radius: 20px;
-}
-.about-content-image{
-    width: 100%;
-    img{
-        width: 100%;
-        height: 500px;
-        border-radius: 20px;
-        object-fit: cover;
-    }
-}
-.about-content,.coperative-locations{
-    padding: 100px 0px;
+.track-page-banner {
+    margin-top: 72px;
 }
 
-/* track order */
-.track-form-heading{
-    font-family: "Dm Sans";
-    font-weight: 600;
-    font-size: 30px;
-    color: var(--primary-color);
-}
-.track-form-sub-heading{
-    font-family: "Inter";
-    font-size: 16px;
-    font-weight: 500;
-    color: #4c4c4c;
-}
-.track-form-status-head{
-    font-family: "Dm Sans";
-    font-weight: 500;
-    font-size: 16px;
-}
-.track-form-tab-form{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    padding: 10px 20px;
-}
-.track-form-btn{
+/* --- Track Order Form (Used in OrderForm.tsx) --- */
+.track-form-btn {
     background-color: var(--secondary-color);
     color: white;
     padding: 10px 20px;
@@ -117,41 +66,51 @@
     outline: none;
     border-radius: 10px;
 }
-.track-form-btn:hover{
+.track-form-btn:hover {
     background-color: #d31411;
     transition: 400ms;
 }
-.track-form-data-heading{
-    font-size: 13px;
+.track-order-form-heading h4 {
+    font-size: 20px;
     font-family: "Dm Sans";
     font-weight: 600;
-    color: var(--primary-color);
-}
-.track-form-data-sub-heading{
-    font-size: 10px;
-    font-family: "Inter";
-    font-weight: 400;
-}
-.track-form-mode-heading{
-    font-size: 14px;
-    color: #1e1e1e;
-    font-family: "Dm Sans";
-}
-.track-form-validation{
-    font-size: 14px;
-    font-family: "Dm Sans";
-}
-.track-title-description{
-    padding-top: 10px;
-}
-.tracking-journey-section{
-    padding: 80px 0px;
+    color: var(--secondary-color);
+    padding-bottom: 6px;
+    animation: softBlink 1.2s infinite ease-in-out;
 }
 
-.tracking-faq-accordian-items{
-    padding: 30px;
+@keyframes softBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
 }
-.tracking-faq-accordian-header span{
+
+/* --- FAQ Section (Used in Faq.tsx) --- */
+.tracking-faq-container {
+    margin-top: 25px;
+}
+.tracking-faq-accordian {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.tracking-faq-accordian-items {
+    padding: 30px;
+    border: 1px solid #d6d6d6;
+    border-radius: 25px;
+    background-color: rgb(245, 245, 245);
+}
+.tracking-faq-accordian-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.tracking-faq-accordian-header h3 {
+    font-size: 17px;
+    font-family: "Dm Sans";
+    font-weight: 550;
+    color: black;
+}
+.tracking-faq-accordian-header span {
     width: 40px;
     height: 40px;
     border-radius: 10px;
@@ -162,74 +121,86 @@
     align-items: center;
     justify-content: center;
 }
-.tracking-faq-accordian-header h3{
-    font-size: 17px;
-    font-family: "Dm Sans";
-    font-weight: 550;
-    color: black;
-}
-.tracking-faq-accordian-header{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    /* padding: 0px 0px 20px; */
-}
-.tracking-faq-accordian-content{
+.tracking-faq-accordian-content {
     padding: 20px 0px;
     font-size: 16px;
     font-weight: 400;
     font-family: "Inter";
     color: #4c4c4c;
 }
-.tracking-faq-accordian-items{
-    border: 1px solid #d6d6d6;
-    border-radius: 25px;
-}
-.tracking-faq-container{
-    margin-top: 25px;
-}
-.tracking-faq-accordian{
+
+/* --- Contact Card (Used in ContactCard.tsx) --- */
+.contact-card-items {
+    background-color: white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
 }
-@media (max-width:1080px) {
-    .coperative-locations,.about-content,.mission-vision{
-        padding: 80px 17px;
-    }
-    .about-content-page-heading, .about-content-page-description{
+.contact-card-header {
+    position: relative;
+}
+.contact-card-header h4 {
+    font-size: 20px;
+    font-weight: 600;
+    font-family: "Dm Sans";
+    color: black;
+}
+.contact-card-header h4::after {
+    content: "";
+    position: absolute;
+    width: 20%;
+    height: 2.5px;
+    background-color: #d31411;
+    bottom: -4px;
+    left: 0px;
+}
+.contact-card-icon {
+    width: 35px;
+    height: 35px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    color: white;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;    
+}
+.contact-card-content a {
+    font-size: 16px;
+    font-family: "Dm Sans";
+    font-weight: 550;
+    color: black;
+}
+
+/* --- Responsive Media Queries --- */
+@media (max-width: 1080px) {
+    .about-content-page-heading, .about-content-page-description {
         width: 100%;
     }
-    .about-content-page-heading{
+    .about-content-page-heading {
         font-size: 28px !important;
         line-height: 36px;
     }
-    .about-content-page-description{
+    .about-content-page-description {
         display: none;
     }
-    .about-banner{
-        padding: 0px 17px;
-    }
-    .about-page-container{
+    .about-page-container {
         padding: 30px 30px !important;
         height: 350px !important;
         display: flex;
         flex-direction: column;
         justify-content: end;
-        
     }
-    .about-content-image img{
-        height: 350px;
+    .track-order-container {
+        padding: 50px 17px 50px 17px !important;
     }
-    .track-form-heading{
-        font-size: 22px;
-    }
-    .track-title-description{
-        text-align: left;
-    }
-    .track-list-flex{
-        display: flex;
-        gap: 10px;
+    .about-content-container {
         padding: 10px;
+    }
+    .track-page-banner {
+        margin-top: 32px;
     }
 }

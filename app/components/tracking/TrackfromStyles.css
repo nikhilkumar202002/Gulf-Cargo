@@ -5,6 +5,7 @@
 
 .tracking-form-box {
   border-radius: 20px;
+  padding: 40px;
 }
 
 /* Tabs */
@@ -145,7 +146,7 @@
         font-size: 11px !important;
     }
     .tracking-form-box{
-      padding: 18px;
+      padding: 18px !important;
     }
     .tracking-shipping-tabs{
       gap: 10px !important;

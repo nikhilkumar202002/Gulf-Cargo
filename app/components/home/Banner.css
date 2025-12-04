@@ -116,7 +116,7 @@
     }
     .main-banner-content h1 {
         font-size: 32px;
-        line-height: 40px;
+        line-height: 36px !important;
     }
     .main-banner-content p {
         font-size: 14px;
@@ -127,5 +127,6 @@
     }
     .main-banner{
         margin-top: 32px;
+        padding: 0px 10px 0px 10px;
     }
 }

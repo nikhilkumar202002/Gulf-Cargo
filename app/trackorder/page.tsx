@@ -1,6 +1,6 @@
 "use client"
 
-import TrackingJourney from '../components/trackingpage/TrackingJourney';
+// import TrackingJourney from '../components/trackingpage/TrackingJourney';
 import TrackpageBanner from '../components/trackingpage/TrackpageBanner';
 import Trackorder from '../components/trackingpage/Trackorder';
 
@@ -9,7 +9,7 @@ const page = () => {
     <>
         <TrackpageBanner/>
         <Trackorder/>
-        <TrackingJourney/>
+        {/* <TrackingJourney/> */}
     </>
   )
 }
