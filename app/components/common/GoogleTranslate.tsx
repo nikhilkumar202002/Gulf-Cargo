@@ -4,6 +4,19 @@ import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { IoLanguage, IoClose } from "react-icons/io5";
 
+// Define specific types for Google Translate on Window
+interface WindowWithGoogle extends Window {
+  googleTranslateElementInit?: () => void;
+  google?: {
+    translate: {
+      TranslateElement: new (
+        options: { pageLanguage: string; autoDisplay: boolean },
+        elementId: string
+      ) => void;
+    };
+  };
+}
+
 // Define your languages
 const languages = [
   { code: "en", name: "English", flag: "🇺🇸" },
@@ -65,11 +78,15 @@ const GoogleTranslate = () => {
       script.async = true;
       document.body.appendChild(script);
 
-      (window as any).googleTranslateElementInit = () => {
-        new (window as any).google.translate.TranslateElement(
-          { pageLanguage: "en", autoDisplay: false },
-          "google_translate_element"
-        );
+      // Define global init function with proper types
+      const win = window as unknown as WindowWithGoogle;
+      win.googleTranslateElementInit = () => {
+        if (win.google) {
+          new win.google.translate.TranslateElement(
+            { pageLanguage: "en", autoDisplay: false },
+            "google_translate_element"
+          );
+        }
       };
     }
   }, []);

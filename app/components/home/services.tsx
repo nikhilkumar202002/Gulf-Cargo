@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
+// 1. Import Variants type
+import { motion, Variants } from "framer-motion";
 import { servicesData } from "../data/servicesData";
 import "./HomeStyles.css";
 import { GoArrowUpRight } from "react-icons/go";
@@ -17,7 +18,8 @@ import 'swiper/css/pagination';
 // Import required modules
 import { Pagination, Autoplay } from 'swiper/modules';
 
-const cardVariant = {
+// 2. Add the type annotation here
+const cardVariant: Variants = {
   hidden: { opacity: 0, y: 20 },
   show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
 };

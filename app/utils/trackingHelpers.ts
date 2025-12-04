@@ -2,6 +2,15 @@ import { BsBoxSeam, BsAirplane, BsHouseCheck } from 'react-icons/bs';
 import { FaPlaneDeparture, FaWarehouse } from 'react-icons/fa';
 import { fetchTrackingData, fetchTrackingByInvoice } from '../api/trackingApi'; 
 
+// Define a type for the payload to avoid 'any'
+interface TrackingPayload {
+  status_id?: number | string;
+  statusId?: number | string;
+  status_name?: string;
+  status?: string;
+  [key: string]: unknown; // Allow other properties safely
+}
+
 /* --- 1. SETUP STAGES (Matches your 5-Step Requirement) --- */
 export const STAGES = [
   { key: 'received',          title: 'Shipment Received',      alt: 'Booked/Warehouse',   icon: BsBoxSeam },        // Stage 0
@@ -37,7 +46,8 @@ const STATUS_ID_TO_STAGE: Record<number, number> = {
   15: 4,
 };
 
-export function resolveStatus(payload: any) {
+// Fixed: Replaced 'any' with TrackingPayload interface
+export function resolveStatus(payload: TrackingPayload) {
   if (!payload) return { stageIndex: -1, displayLabel: '' };
 
   const id = Number(payload.status_id || payload.statusId || 0);
@@ -86,29 +96,38 @@ export const fetchSmart = async (q: string) => {
         if (Array.isArray(res) && res.length > 0) return res[0]; 
         if (Array.isArray(res) && res.length === 0) throw new Error("Invoice found but no shipments listed.");
         return res;
-    } catch(err) {
+    } catch {
         // Fallthrough to try generic tracking if invoice fails (optional, but safer)
+        // Fixed: Removed unused 'err' variable
     }
   }
 
   // B. Try Standard Tracking API
   try {
     return await fetchTrackingData(s);
-  } catch (trackingError) {
+  } catch {
+    // Fixed: Removed unused 'trackingError' variable
     // C. Fallback: If it wasn't an INV code but failed Tracking API, try Invoice API as last resort
     try {
       const res = await fetchTrackingByInvoice(s);
       // FIX: Handle Array here too
       if (Array.isArray(res) && res.length > 0) return res[0];
       return res;
-    } catch (invoiceError: any) {
+    } catch (invoiceError: unknown) {
+      // Fixed: Typed as unknown instead of any, and safely extracted message
       let msg = "Shipment not found.";
-      if (invoiceError?.message) msg = invoiceError.message; 
+      
+      // Type guard to check if invoiceError is an object with a message property
+      if (typeof invoiceError === 'object' && invoiceError !== null && 'message' in invoiceError) {
+         msg = (invoiceError as { message: string }).message;
+      } 
       else if (typeof invoiceError === 'string') {
           try {
              const parsed = JSON.parse(invoiceError);
              if(parsed.message) msg = parsed.message;
-          } catch(e) {}
+          } catch {
+             // Fixed: Removed unused 'e' variable
+          }
       }
       throw new Error(msg);
     }

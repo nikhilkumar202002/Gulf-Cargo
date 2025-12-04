@@ -81,7 +81,7 @@ const HomePopup = () => {
                     onClick={handleClose}
                     className="text-gray-400 text-sm hover:text-gray-600 font-medium font-['Inter']"
                   >
-                    No, thanks. I'll browse first.
+                    No, thanks. I&apos;ll browse first.
                   </button>
                 </div>
               </div>

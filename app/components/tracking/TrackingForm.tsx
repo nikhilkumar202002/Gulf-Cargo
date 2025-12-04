@@ -8,7 +8,6 @@ import { fetchTrackingData, fetchTrackingByInvoice } from '@/app/api/trackingApi
 import "./TrackfromStyles.css";
 
 /* ------------------------------- Types ---------------------------------- */
-type Mode = 'tracking';
 type ActiveTab = 'tracking' | 'invoice';
 
 export type TrackResponse = {
@@ -94,7 +93,7 @@ const TrackingForm: React.FC = () => {
       
       router.push(targetUrl);
 
-    } catch (err) {
+    } catch {
       // Stay on this page and show error
       setErrorMsg('Tracking number not found. Please check the number and try again.');
     } finally {
