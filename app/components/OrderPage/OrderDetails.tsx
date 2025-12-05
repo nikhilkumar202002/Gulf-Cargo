@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
-import { useRouter, useSearchParams } from "next/navigation"; 
+import { useEffect, useState, useMemo, type CSSProperties } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import type { IconType } from "react-icons";
 import { IoArrowBack } from "react-icons/io5";
 import { BsBoxSeamFill } from "react-icons/bs";
 import { FaTruckPlane } from "react-icons/fa6";
@@ -10,8 +11,8 @@ import { TbTruckDelivery } from "react-icons/tb";
 import { RiCheckboxFill } from "react-icons/ri";
 import { ImDiamonds } from "react-icons/im";
 import { CgSpinner } from "react-icons/cg";
-import { fetchSmart } from "../../utils/trackingHelpers"; 
-import { motion, Variants } from "framer-motion";
+import { fetchSmart } from "../../utils/trackingHelpers";
+import { motion, type Variants } from "framer-motion";
 import Adposter from "../../../public/Images/ad-poster.png";
 import "./Orderpage.css";
 import Image from "next/image";
@@ -26,17 +27,52 @@ const FullScreenLoader = () => (
   </div>
 );
 
+// --- TYPES ---
+interface OrderDetailsProps {
+  trackingId?: string;
+}
+
+interface TrackingData {
+  status_id?: number | string;
+  statusId?: number | string;
+  id?: number | string;
+  current_status_id?: number | string;
+  status?: string | number;
+  status_name?: string;
+  invoice_no?: string;
+  tracking_code?: string;
+  tracking_no?: string;
+  shipment_method?: string;
+  method?: string;
+  updated_at?: string;
+  success?: boolean;
+  message?: string;
+  data?: TrackingData | TrackingData[];
+}
+
+interface TrackingStep {
+  label: string;
+  ids: Array<number | string>;
+  isError?: boolean;
+}
+
+interface TrackingStage {
+  stageTitle: string;
+  icon: IconType;
+  steps: TrackingStep[];
+}
+
 // --- CONFIGURATION ---
-const TRACKING_WORKFLOW = [
+const TRACKING_WORKFLOW: TrackingStage[] = [
   {
     stageTitle: "Shipment Received",
     icon: BsBoxSeamFill,
     steps: [
-      { label: "Shipment Received", ids: [1, 11, 13] }, 
+      { label: "Shipment Received", ids: [1, 11, 13] },
       { label: "Reached Warehouse", ids: [16] },
       { label: "Shipment Booked", ids: [2] },
-      { label: "Shipment Forwarded", ids: [3] }
-    ]
+      { label: "Shipment Forwarded", ids: [3] },
+    ],
   },
   {
     stageTitle: "In Transit",
@@ -44,8 +80,8 @@ const TRACKING_WORKFLOW = [
     steps: [
       { label: "In Transit", ids: [14, 17, 12] },
       { label: "Arrived at Port", ids: [22] },
-      { label: "Waiting for Clearance", ids: [5] }
-    ]
+      { label: "Waiting for Clearance", ids: [5] },
+    ],
   },
   {
     stageTitle: "Arrival & Clearance",
@@ -55,133 +91,214 @@ const TRACKING_WORKFLOW = [
       { label: "Shipment Cleared", ids: [19, 7] },
       { label: "Shipment on Hold", ids: [6] },
       { label: "Booking in Progress", ids: [20] },
-      { label: "In Transit", ids: [21] }
-    ]
+      { label: "In Transit", ids: [21] },
+    ],
   },
   {
     stageTitle: "Out for Delivery",
     icon: TbTruckDelivery,
     steps: [
       { label: "Out for Delivery", ids: [8, 9] },
-      { label: "Not Delivered", ids: [10], isError: true }
-    ]
+      { label: "Not Delivered", ids: [10], isError: true },
+    ],
   },
   {
     stageTitle: "Delivered",
     icon: RiCheckboxFill,
-    steps: [
-      { label: "Delivered", ids: [15] }
-    ]
-  }
+    steps: [{ label: "Delivered", ids: [15] }],
+  },
 ];
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.2 } }
+  show: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.2 } },
 };
 
 const itemVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 50 } }
+  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 50 } },
 };
 
-const OrderDetails = () => {
+// --- HELPERS ---
+function unwrapTracking(input: unknown): TrackingData | null {
+  if (!input || typeof input !== "object") return null;
+
+  const root = input as Record<string, unknown>;
+
+  // Handle top-level success flag
+  const success = root.success;
+  if (success === false) {
+    const msg =
+      typeof root.message === "string" ? root.message : "Shipment not found";
+    throw new Error(msg);
+  }
+
+  let extracted: unknown;
+
+  if ("data" in root && root.data !== undefined) {
+    extracted = root.data as unknown;
+  } else {
+    extracted = input;
+  }
+
+  // Unwrap nested data/array layers
+  // e.g. { data: [...] }, { data: { data: [...] } }, [ { ... } ], etc.
+  // We'll walk until we hit a non-data, non-array object.
+  // This is intentionally defensive for inconsistent API shapes.
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    if (Array.isArray(extracted)) {
+      extracted = extracted[0] ?? null;
+      continue;
+    }
+
+    if (!extracted || typeof extracted !== "object") break;
+
+    const obj = extracted as Record<string, unknown>;
+
+    if ("data" in obj && obj.data !== undefined) {
+      extracted = obj.data as unknown;
+      continue;
+    }
+
+    break;
+  }
+
+  if (!extracted || typeof extracted !== "object") return null;
+
+  return extracted as TrackingData;
+}
+
+const OrderDetails = ({ trackingId: propTrackingId }: OrderDetailsProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  // Support 'invoice', 'shipment', 'track', or 'id' params
-  const trackingId = searchParams.get("invoice") || searchParams.get("shipment") || searchParams.get("track") || searchParams.get("id");
+
+  const trackingId =
+    propTrackingId ||
+    searchParams.get("invoice") ||
+    searchParams.get("shipment") ||
+    searchParams.get("track") ||
+    searchParams.get("id");
 
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<TrackingData | null>(null);
   const [error, setError] = useState("");
   const [expandedStep, setExpandedStep] = useState<number>(-1);
 
   // --- FETCH DATA ---
   useEffect(() => {
-    if (!trackingId) { 
-        setLoading(false); // Stop loading if no ID, but don't error immediately (optional)
-        return; 
+    if (!trackingId) {
+      setLoading(false);
+      return;
     }
-    
+
     const loadData = async () => {
       setLoading(true);
       setError("");
-      try {
-        // --- 3 SECOND DELAY LOGIC ---
-        const minLoaderTime = new Promise(resolve => setTimeout(resolve, 3000));
-        
-        // Wait for both the API fetch AND the 3-second timer
-        const [result] = await Promise.all([
-            fetchSmart(trackingId),
-            minLoaderTime
-        ]);
-        
-        let cleanData = result;
-        // Unwrap logic for nested API responses
-        if (cleanData && cleanData.data) cleanData = cleanData.data;
-        if (Array.isArray(cleanData)) cleanData = cleanData.length > 0 ? cleanData[0] : null;
-        if (cleanData && cleanData.data) cleanData = cleanData.data;
-        if (Array.isArray(cleanData)) cleanData = cleanData.length > 0 ? cleanData[0] : null;
 
-        if (!cleanData) throw new Error("No shipment data found.");
-        
-        if (result && result.success === false) throw new Error(result.message || "Shipment not found");
-        
-        setData(cleanData);
-      } catch (err: any) {
+      try {
+        const minLoaderTime = new Promise<void>((resolve) =>
+          setTimeout(resolve, 3000)
+        );
+
+        const [result] = await Promise.all([fetchSmart(trackingId), minLoaderTime]);
+
+        const unwrapped = unwrapTracking(result);
+
+        if (!unwrapped) {
+          throw new Error("No shipment data found.");
+        }
+
+        setData(unwrapped);
+      } catch (err: unknown) {
         let msg = "Tracking details not found.";
-        // Clean up error message
-        try {
-           if (err.message.includes('{')) {
-              const parsed = JSON.parse(err.message.replace(/.*?(\{.*\})/, '$1'));
+
+        if (err instanceof Error) {
+          try {
+            if (err.message.includes("{")) {
+              const parsed = JSON.parse(
+                err.message.replace(/.*?(\{.*\})/, "$1")
+              ) as { message?: string };
               if (parsed.message) msg = parsed.message;
-           } else { msg = err.message; }
-        } catch {}
-        
+            } else {
+              msg = err.message;
+            }
+          } catch {
+            msg = err.message;
+          }
+        } else if (typeof err === "string") {
+          msg = err;
+        }
+
         console.error("Tracking Error:", err);
         setError(msg);
-      } finally { 
-        setLoading(false); 
+      } finally {
+        setLoading(false);
       }
     };
+
     loadData();
   }, [trackingId]);
 
   // --- CALCULATE ACTIVE STATE ---
   const { activeStageIndex, activeStepIndex, currentStatusLabel } = useMemo(() => {
-    if (!data) return { activeStageIndex: 0, activeStepIndex: 0, currentStatusLabel: "Processing..." };
-
-    let rawId = data.status_id ?? data.statusId ?? data.id ?? data.current_status_id;
-    if (!rawId && data.status && !isNaN(Number(data.status))) {
-        rawId = data.status;
+    if (!data) {
+      return {
+        activeStageIndex: 0,
+        activeStepIndex: 0,
+        currentStatusLabel: "Processing...",
+      };
     }
-    const currentIdString = String(rawId || 0); 
 
-    for (let i = 0; i < TRACKING_WORKFLOW.length; i++) {
+    let rawId =
+      data.status_id ?? data.statusId ?? data.id ?? data.current_status_id;
+
+    if (!rawId && data.status && !Number.isNaN(Number(data.status))) {
+      rawId = data.status;
+    }
+
+    const currentIdString = String(rawId ?? 0);
+
+    for (let i = 0; i < TRACKING_WORKFLOW.length; i += 1) {
       const stage = TRACKING_WORKFLOW[i];
-      for (let j = 0; j < stage.steps.length; j++) {
+      for (let j = 0; j < stage.steps.length; j += 1) {
         const step = stage.steps[j];
-        if (step.ids.some(id => String(id) === currentIdString)) {
-           return { activeStageIndex: i, activeStepIndex: j, currentStatusLabel: step.label };
+        if (step.ids.some((id) => String(id) === currentIdString)) {
+          return {
+            activeStageIndex: i,
+            activeStepIndex: j,
+            currentStatusLabel: step.label,
+          };
         }
       }
     }
 
-    // Text Fallback
-    const rawText = (data.status_name || data.status || "").toString().toLowerCase().trim();
-    if (isNaN(Number(rawText))) {
-        for (let i = 0; i < TRACKING_WORKFLOW.length; i++) {
-            const stage = TRACKING_WORKFLOW[i];
-            for (let j = 0; j < stage.steps.length; j++) {
-                const stepLabel = stage.steps[j].label.toLowerCase();
-                if (rawText.includes(stepLabel) || stepLabel.includes(rawText)) {
-                    return { activeStageIndex: i, activeStepIndex: j, currentStatusLabel: stage.steps[j].label };
-                }
-            }
+    const rawText = (data.status_name || data.status || "")
+      .toString()
+      .toLowerCase()
+      .trim();
+
+    if (Number.isNaN(Number(rawText))) {
+      for (let i = 0; i < TRACKING_WORKFLOW.length; i += 1) {
+        const stage = TRACKING_WORKFLOW[i];
+        for (let j = 0; j < stage.steps.length; j += 1) {
+          const stepLabel = stage.steps[j].label.toLowerCase();
+          if (rawText.includes(stepLabel) || stepLabel.includes(rawText)) {
+            return {
+              activeStageIndex: i,
+              activeStepIndex: j,
+              currentStatusLabel: stage.steps[j].label,
+            };
+          }
         }
+      }
     }
 
-    return { activeStageIndex: 0, activeStepIndex: 0, currentStatusLabel: data.status_name || "Shipment Received" };
+    return {
+      activeStageIndex: 0,
+      activeStepIndex: 0,
+      currentStatusLabel: data.status_name || "Shipment Received",
+    };
   }, [data]);
 
   useEffect(() => {
@@ -189,215 +306,282 @@ const OrderDetails = () => {
   }, [activeStageIndex, data]);
 
   const handleBack = () => router.back();
-  const displayCode = data?.invoice_no || data?.tracking_code || data?.tracking_no || trackingId;
-  const method = data?.shipment_method || data?.method || 'Standard';
-  const lastUpdate = data?.updated_at ? new Date(data.updated_at).toLocaleDateString() : 'Just now';
+
+  const displayCode =
+    data?.invoice_no || data?.tracking_code || data?.tracking_no || trackingId;
+
+  const method = data?.shipment_method || data?.method || "Standard";
+
+  const lastUpdate = data?.updated_at
+    ? new Date(data.updated_at).toLocaleDateString()
+    : "Just now";
 
   const getHeaderBadgeColor = () => {
-      if (activeStageIndex === 4) return "bg-green-100 text-green-700 border-green-200"; 
-      return "bg-blue-50 text-blue-600 border-blue-200"; 
+    if (activeStageIndex === 4) {
+      return "bg-green-100 text-green-700 border-green-200";
+    }
+    return "bg-blue-50 text-blue-600 border-blue-200";
   };
 
   if (loading) return <FullScreenLoader />;
 
-  if (error) return (
-    <div className="h-screen flex flex-col items-center justify-center p-6 bg-gray-50">
-        <div className="bg-white p-10 rounded-2xl shadow-xl text-center max-w-md">
-            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 text-red-500 text-3xl">
-                !
-            </div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Shipment Not Found</h2>
-            <p className="text-gray-500 mb-6">{error}</p>
-            <button 
-                onClick={handleBack} 
-                className="px-6 py-3 bg-black text-white rounded-xl font-medium hover:bg-gray-800 transition-colors"
-            >
-                Go Back & Try Again
-            </button>
-        </div>
-    </div>
-  );
+  if (error) {
+    return (
+      <div className="p-10 text-center text-red-500 font-bold">
+        {error}
+        <br />
+        <button
+          type="button"
+          onClick={handleBack}
+          className="underline mt-4 text-black"
+        >
+          Go Back
+        </button>
+      </div>
+    );
+  }
 
   return (
     <section className="order-page">
       <div className="order-page-container container">
         <div className="order-page-flex grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8">
           <div className="order-page-details">
-            
-            <div className="order-page-details-header cursor-pointer" onClick={handleBack}>
-              <h3 className="flex items-center gap-1"><span><IoArrowBack /></span> Back</h3>
+            <div
+              className="order-page-details-header cursor-pointer"
+              onClick={handleBack}
+            >
+              <h3 className="flex items-center gap-1">
+                <span>
+                  <IoArrowBack />
+                </span>{" "}
+                Back
+              </h3>
             </div>
 
             {/* HEADER */}
-            <motion.div 
-               initial={{ opacity: 0, y: -20 }} 
-               animate={{ opacity: 1, y: 0 }} 
-               className="order-details-header relative mb-8"
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="order-details-header relative mb-8"
             >
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                  <h2>INVOICE: <span>{displayCode}</span></h2>
-                  <h3>METHOD: <span>{method}</span></h3>
+                  <h2>
+                    INVOICE: <span>{displayCode}</span>
+                  </h2>
+                  <h3>
+                    METHOD: <span>{method}</span>
+                  </h3>
                 </div>
-                <div className={`px-4 py-2 rounded-full border text-sm font-bold uppercase tracking-wide w-fit ${getHeaderBadgeColor()}`}>
+                <div
+                  className={`px-4 py-2 rounded-full border text-sm font-bold uppercase tracking-wide w-fit ${getHeaderBadgeColor()}`}
+                >
                   {currentStatusLabel}
                 </div>
               </div>
             </motion.div>
 
             {/* TRACKING TIMELINE */}
-            <motion.div 
-               className="order-page-trackings grid grid-cols-[50px_1fr]"
-               variants={containerVariants}
-               initial="hidden"
-               animate="show"
+            <motion.div
+              className="order-page-trackings grid grid-cols-[50px_1fr]"
+              variants={containerVariants}
+              initial="hidden"
+              animate="show"
             >
-                {TRACKING_WORKFLOW.map((stage, sIndex) => {
-                  const Icon = stage.icon;
-                  const isStagePast = sIndex < activeStageIndex;
-                  const isStageActive = sIndex === activeStageIndex;
-                  const isStageDelivered = activeStageIndex === 4 && sIndex === 4;
-                  
-                  let iconClass = "order-page-tracking-icon"; 
-                  let iconStyle = {};
-                  let textStyle = { fontSize: '1.1rem' };
+              {TRACKING_WORKFLOW.map((stage, sIndex) => {
+                const Icon = stage.icon;
+                const isStagePast = sIndex < activeStageIndex;
+                const isStageActive = sIndex === activeStageIndex;
+                const isStageDelivered = activeStageIndex === 4 && sIndex === 4;
 
-                  if (isStagePast || isStageActive) {
-                      iconStyle = { backgroundColor: "#e6f4ea", color: "#00925d" }; 
-                      textStyle = { ...textStyle, color: "black", fontWeight: "600" };
-                  } else {
-                      iconStyle = { backgroundColor: "#f3f4f6", color: "#9ca3af" };
-                      textStyle = { ...textStyle, color: "#9ca3af", fontWeight: "500" };
-                  }
+                const iconClass = "order-page-tracking-icon";
 
-                  const isExpanded = sIndex === expandedStep;
-                  const showLine = sIndex !== TRACKING_WORKFLOW.length - 1;
+                let iconStyle: CSSProperties = {};
+                let textStyle: CSSProperties = { fontSize: "1.1rem" };
 
-                  return (
-                    <motion.div key={sIndex} className="contents" variants={itemVariants}>
-                      
-                      {/* COL 1: Icon */}
-                      <div className="relative flex flex-col items-center">
-                        {showLine && (
-                           <div className="absolute top-0 bottom-0 left-1/2 w-0 border-l-2 border-dashed border-gray-300 -translate-x-1/2 z-0"></div>
-                        )}
-                        <div 
-                          className={`cursor-pointer transition-all z-10 ${iconClass} shadow-sm border border-white`} 
-                          style={iconStyle}
-                          onClick={() => setExpandedStep(isExpanded ? -1 : sIndex)}
-                        >
-                          <Icon />
-                        </div>
+                if (isStagePast || isStageActive) {
+                  iconStyle = {
+                    backgroundColor: "#e6f4ea",
+                    color: "#00925d",
+                  };
+                  textStyle = {
+                    ...textStyle,
+                    color: "black",
+                    fontWeight: 600,
+                  };
+                } else {
+                  iconStyle = {
+                    backgroundColor: "#f3f4f6",
+                    color: "#9ca3af",
+                  };
+                  textStyle = {
+                    ...textStyle,
+                    color: "#9ca3af",
+                    fontWeight: 500,
+                  };
+                }
+
+                const isExpanded = sIndex === expandedStep;
+                const showLine = sIndex !== TRACKING_WORKFLOW.length - 1;
+
+                return (
+                  <motion.div
+                    // eslint-disable-next-line react/no-array-index-key
+                    key={sIndex}
+                    className="contents"
+                    variants={itemVariants}
+                  >
+                    {/* COL 1: Icon */}
+                    <div className="relative flex flex-col items-center">
+                      {showLine && (
+                        <div className="absolute top-0 bottom-0 left-1/2 w-0 border-l-2 border-dashed border-gray-300 -translate-x-1/2 z-0" />
+                      )}
+                      <div
+                        className={`cursor-pointer transition-all z-10 ${iconClass} shadow-sm border border-white`}
+                        style={iconStyle}
+                        onClick={() =>
+                          setExpandedStep(isExpanded ? -1 : sIndex)
+                        }
+                      >
+                        <Icon />
                       </div>
+                    </div>
 
-                      {/* COL 2: Title & Bar */}
-                      <div className="flex flex-col justify-center pb-8 pl-4 cursor-pointer" onClick={() => setExpandedStep(isExpanded ? -1 : sIndex)}>
-                          <div className="flex flex-col gap-1">
-                            <h5 style={textStyle}>{stage.stageTitle}</h5>
-                            
-                          </div>
+                    {/* COL 2: Title */}
+                    <div
+                      className="flex flex-col justify-center pb-8 pl-4 cursor-pointer"
+                      onClick={() =>
+                        setExpandedStep(isExpanded ? -1 : sIndex)
+                      }
+                    >
+                      <div className="flex flex-col gap-1">
+                        <h5 style={textStyle}>{stage.stageTitle}</h5>
                       </div>
+                    </div>
 
-                      {/* SUB-STEPS */}
-                      {isExpanded && (
-                        <>
-                           {stage.steps.map((subStep, stepIndex) => {
-                              let stepColor = "#9ca3af"; 
-                              let isBlinking = false;
-                              let isErrorText = subStep.isError || false;
+                    {/* SUB-STEPS */}
+                    {isExpanded && (
+                      <>
+                        {stage.steps.map((subStep, stepIndex) => {
+                          let stepColor = "#9ca3af";
+                          const isErrorText = subStep.isError ?? false;
 
-                              if (isStagePast) {
-                                  stepColor = "#00925d"; 
-                              } else if (isStageActive) {
-                                  if (stepIndex < activeStepIndex) {
-                                      stepColor = "#00925d"; 
-                                  } else if (stepIndex === activeStepIndex) {
-                                      stepColor = isStageDelivered ? "#00925d" : "#ef4444"; 
-                                      isBlinking = !isStageDelivered;
-                                  }
-                              }
+                          if (isStagePast) {
+                            stepColor = "#00925d";
+                          } else if (isStageActive) {
+                            if (stepIndex < activeStepIndex) {
+                              stepColor = "#00925d";
+                            } else if (stepIndex === activeStepIndex) {
+                              stepColor = isStageDelivered
+                                ? "#00925d"
+                                : "#ef4444";
+                            }
+                          }
 
-                              if (isStageDelivered && stepIndex === activeStepIndex) {
-                                 isBlinking = true; 
-                              }
+                          if (
+                            isErrorText &&
+                            stepIndex === activeStepIndex &&
+                            isStageActive
+                          ) {
+                            stepColor = "#ef4444";
+                          }
 
-                              if (isErrorText && stepIndex === activeStepIndex && isStageActive) {
-                                  stepColor = "#ef4444";
-                              }
+                          return (
+                            <motion.div
+                              key={`sub-${sIndex}-${stepIndex}`}
+                              className="contents"
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                            >
+                              <div className="relative flex flex-col items-center justify-center">
+                                <div className="absolute top-0 bottom-0 left-1/2 w-0 border-l-2 border-dashed border-gray-300 -translate-x-1/2 z-0" />
+                                <div className="relative z-10 flex items-center justify-center w-6 h-6">
+                                  <div
+                                    className="relative z-10 bg-white p-0.5"
+                                    style={{ color: stepColor }}
+                                  >
+                                    <ImDiamonds size={14} />
+                                  </div>
+                                </div>
+                              </div>
 
-                              return (
-                                <motion.div 
-                                    key={`sub-${sIndex}-${stepIndex}`} 
-                                    className="contents"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
+                              <div className="flex items-center flex-wrap gap-2 pb-4 pl-4">
+                                <h5
+                                  className="text-sm font-medium"
+                                  style={{
+                                    color:
+                                      isErrorText &&
+                                      stepIndex === activeStepIndex &&
+                                      isStageActive
+                                        ? "#ef4444"
+                                        : "#374151",
+                                  }}
                                 >
-                                  <div className="relative flex flex-col items-center justify-center">
-                                    <div className="absolute top-0 bottom-0 left-1/2 w-0 border-l-2 border-dashed border-gray-300 -translate-x-1/2 z-0"></div>
-                                    <div className="relative z-10 flex items-center justify-center w-6 h-6">
-                                       {isBlinking && (
-                                         <span className={`absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping ${isStageDelivered ? 'bg-green-200' : 'bg-red-200'}`}></span>
-                                       )}
-                                       <div className={`relative z-10 bg-white p-0.5`} style={{ color: stepColor }}>
-                                          <ImDiamonds size={14} />
-                                       </div>
-                                    </div>
-                                  </div>
+                                  {subStep.label}
+                                </h5>
 
-                                  <div className="flex items-center flex-wrap gap-2 pb-4 pl-4">
-                                     <h5 className={`text-sm font-medium`} style={{ color: (isErrorText && isBlinking) ? "#ef4444" : "#374151" }}>
-                                        {subStep.label}
-                                     </h5>
-                                     
-                                     {isStageActive && stepIndex === activeStepIndex && (
-                                        <span className={`px-2 py-0.5 text-[10px] uppercase font-bold text-white rounded-md ${isStageDelivered ? 'bg-green-500' : 'bg-red-500'}`}>
-                                          Latest
-                                        </span>
-                                     )}
+                                {isStageActive &&
+                                  stepIndex === activeStepIndex && (
+                                    <span
+                                      className={`px-2 py-0.5 text-[10px] uppercase font-bold text-white rounded-md ${
+                                        isStageDelivered
+                                          ? "bg-green-500"
+                                          : "bg-red-500"
+                                      }`}
+                                    >
+                                      Latest
+                                    </span>
+                                  )}
 
-                                     {isStageActive && stepIndex === activeStepIndex && (
-                                        <span className="text-gray-400 text-xs ml-2 border-l pl-2 border-gray-300">
-                                            {lastUpdate}
-                                        </span>
-                                     )}
-                                  </div>
-                                </motion.div>
-                              );
-                           })}
-                           
-                           <div className="contents">
-                              <div className="relative">
-                                  {sIndex !== TRACKING_WORKFLOW.length - 1 && (
-                                     <div className="absolute top-0 bottom-0 left-1/2 w-0 border-l-2 border-dashed border-gray-300 -translate-x-1/2 z-0"></div>
+                                {isStageActive &&
+                                  stepIndex === activeStepIndex && (
+                                    <span className="text-gray-400 text-xs ml-2 border-l pl-2 border-gray-300">
+                                      {lastUpdate}
+                                    </span>
                                   )}
                               </div>
-                              <div className="h-6"></div> 
-                           </div>
-                        </>
-                      )}
-                    </motion.div>
-                  );
-                })}
+                            </motion.div>
+                          );
+                        })}
+
+                        <div className="contents">
+                          <div className="relative">
+                            {sIndex !== TRACKING_WORKFLOW.length - 1 && (
+                              <div className="absolute top-0 bottom-0 left-1/2 w-0 border-l-2 border-dashed border-gray-300 -translate-x-1/2 z-0" />
+                            )}
+                          </div>
+                          <div className="h-6" />
+                        </div>
+                      </>
+                    )}
+                  </motion.div>
+                );
+              })}
             </motion.div>
 
             <div className="order-page-contact mt-10 p-6 bg-gray-50 rounded-xl">
               <h3>Need Help?</h3>
               <p>
-                <a href="tel:+966547619393" className="text-blue-600 font-bold hover:underline">+966 54 761 9393</a>
+                <a
+                  href="tel:+966547619393"
+                  className="text-blue-600 font-bold hover:underline"
+                >
+                  +966 54 761 9393
+                </a>
               </p>
             </div>
           </div>
-          
+
           <div className="order-page-ad hidden md:block w-full">
-            <Image 
-              src={Adposter} 
-              alt="Gulcargoksa" 
+            <Image
+              src={Adposter}
+              alt="Gulcargoksa"
               className="rounded-2xl"
               width={0}
               height={0}
               sizes="100vw"
-              style={{ width: '100%', height: 'auto' }}
-              priority={true} 
+              style={{ width: "100%", height: "auto" }}
+              priority
             />
           </div>
         </div>
