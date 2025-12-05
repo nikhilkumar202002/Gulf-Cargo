@@ -16,13 +16,11 @@ import Adposter from "../../../public/Images/ad-poster.png";
 import "./Orderpage.css";
 import Image from "next/image";
 
-// --- FULL SCREEN LOADER (Smooth, No Blinking) ---
+// --- FULL SCREEN LOADER (Smooth, No Blink) ---
 const FullScreenLoader = () => (
   <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white transition-opacity duration-500">
     <div className="flex flex-col items-center gap-4">
-      {/* Spinner rotates */}
-      <CgSpinner className="animate-spin text-black" size={50} />
-      {/* Text is static (removed animate-pulse) */}
+      <CgSpinner className="animate-spin text-black" size={60} />
       <h2 className="text-xl font-bold text-black">Tracking Shipment...</h2>
     </div>
   </div>
@@ -90,6 +88,7 @@ const itemVariants: Variants = {
 const OrderDetails = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  // Support 'invoice', 'shipment', 'track', or 'id' params
   const trackingId = searchParams.get("invoice") || searchParams.get("shipment") || searchParams.get("track") || searchParams.get("id");
 
   const [loading, setLoading] = useState(true);
@@ -99,22 +98,26 @@ const OrderDetails = () => {
 
   // --- FETCH DATA ---
   useEffect(() => {
-    if (!trackingId) { setLoading(false); return; }
+    if (!trackingId) { 
+        setLoading(false); // Stop loading if no ID, but don't error immediately (optional)
+        return; 
+    }
     
     const loadData = async () => {
       setLoading(true);
       setError("");
       try {
         // --- 3 SECOND DELAY LOGIC ---
-        // Forces the loader to stay visible for at least 3 seconds
         const minLoaderTime = new Promise(resolve => setTimeout(resolve, 3000));
         
+        // Wait for both the API fetch AND the 3-second timer
         const [result] = await Promise.all([
             fetchSmart(trackingId),
             minLoaderTime
         ]);
         
         let cleanData = result;
+        // Unwrap logic for nested API responses
         if (cleanData && cleanData.data) cleanData = cleanData.data;
         if (Array.isArray(cleanData)) cleanData = cleanData.length > 0 ? cleanData[0] : null;
         if (cleanData && cleanData.data) cleanData = cleanData.data;
@@ -127,14 +130,19 @@ const OrderDetails = () => {
         setData(cleanData);
       } catch (err: any) {
         let msg = "Tracking details not found.";
+        // Clean up error message
         try {
            if (err.message.includes('{')) {
               const parsed = JSON.parse(err.message.replace(/.*?(\{.*\})/, '$1'));
               if (parsed.message) msg = parsed.message;
            } else { msg = err.message; }
         } catch {}
+        
+        console.error("Tracking Error:", err);
         setError(msg);
-      } finally { setLoading(false); }
+      } finally { 
+        setLoading(false); 
+      }
     };
     loadData();
   }, [trackingId]);
@@ -159,6 +167,7 @@ const OrderDetails = () => {
       }
     }
 
+    // Text Fallback
     const rawText = (data.status_name || data.status || "").toString().toLowerCase().trim();
     if (isNaN(Number(rawText))) {
         for (let i = 0; i < TRACKING_WORKFLOW.length; i++) {
@@ -191,7 +200,23 @@ const OrderDetails = () => {
 
   if (loading) return <FullScreenLoader />;
 
-  if (error) return <div className="p-10 text-center text-red-500 font-bold">{error} <br/><button onClick={handleBack} className="underline mt-4 text-black">Go Back</button></div>;
+  if (error) return (
+    <div className="h-screen flex flex-col items-center justify-center p-6 bg-gray-50">
+        <div className="bg-white p-10 rounded-2xl shadow-xl text-center max-w-md">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 text-red-500 text-3xl">
+                !
+            </div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">Shipment Not Found</h2>
+            <p className="text-gray-500 mb-6">{error}</p>
+            <button 
+                onClick={handleBack} 
+                className="px-6 py-3 bg-black text-white rounded-xl font-medium hover:bg-gray-800 transition-colors"
+            >
+                Go Back & Try Again
+            </button>
+        </div>
+    </div>
+  );
 
   return (
     <section className="order-page">
@@ -231,6 +256,7 @@ const OrderDetails = () => {
                   const Icon = stage.icon;
                   const isStagePast = sIndex < activeStageIndex;
                   const isStageActive = sIndex === activeStageIndex;
+                  const isStageDelivered = activeStageIndex === 4 && sIndex === 4;
                   
                   let iconClass = "order-page-tracking-icon"; 
                   let iconStyle = {};
@@ -264,11 +290,11 @@ const OrderDetails = () => {
                         </div>
                       </div>
 
-                      {/* COL 2: Title & "In Progress" Bar */}
+                      {/* COL 2: Title & Bar */}
                       <div className="flex flex-col justify-center pb-8 pl-4 cursor-pointer" onClick={() => setExpandedStep(isExpanded ? -1 : sIndex)}>
                           <div className="flex flex-col gap-1">
                             <h5 style={textStyle}>{stage.stageTitle}</h5>
-
+                            
                           </div>
                       </div>
 
@@ -286,12 +312,12 @@ const OrderDetails = () => {
                                   if (stepIndex < activeStepIndex) {
                                       stepColor = "#00925d"; 
                                   } else if (stepIndex === activeStepIndex) {
-                                      stepColor = activeStageIndex === 4 ? "#00925d" : "#ef4444"; 
-                                      isBlinking = activeStageIndex !== 4;
+                                      stepColor = isStageDelivered ? "#00925d" : "#ef4444"; 
+                                      isBlinking = !isStageDelivered;
                                   }
                               }
 
-                              if (activeStageIndex === 4 && stepIndex === activeStepIndex) {
+                              if (isStageDelivered && stepIndex === activeStepIndex) {
                                  isBlinking = true; 
                               }
 
@@ -306,12 +332,11 @@ const OrderDetails = () => {
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                 >
-                                  {/* Inner Icon */}
                                   <div className="relative flex flex-col items-center justify-center">
                                     <div className="absolute top-0 bottom-0 left-1/2 w-0 border-l-2 border-dashed border-gray-300 -translate-x-1/2 z-0"></div>
                                     <div className="relative z-10 flex items-center justify-center w-6 h-6">
                                        {isBlinking && (
-                                         <span className={`absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping ${activeStageIndex === 4 ? 'bg-green-200' : 'bg-red-200'}`}></span>
+                                         <span className={`absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping ${isStageDelivered ? 'bg-green-200' : 'bg-red-200'}`}></span>
                                        )}
                                        <div className={`relative z-10 bg-white p-0.5`} style={{ color: stepColor }}>
                                           <ImDiamonds size={14} />
@@ -319,14 +344,13 @@ const OrderDetails = () => {
                                     </div>
                                   </div>
 
-                                  {/* Text */}
                                   <div className="flex items-center flex-wrap gap-2 pb-4 pl-4">
                                      <h5 className={`text-sm font-medium`} style={{ color: (isErrorText && isBlinking) ? "#ef4444" : "#374151" }}>
                                         {subStep.label}
                                      </h5>
                                      
                                      {isStageActive && stepIndex === activeStepIndex && (
-                                        <span className={`px-2 py-0.5 text-[10px] uppercase font-bold text-white rounded-md ${activeStageIndex === 4 ? 'bg-green-500' : 'bg-red-500'}`}>
+                                        <span className={`px-2 py-0.5 text-[10px] uppercase font-bold text-white rounded-md ${isStageDelivered ? 'bg-green-500' : 'bg-red-500'}`}>
                                           Latest
                                         </span>
                                      )}
