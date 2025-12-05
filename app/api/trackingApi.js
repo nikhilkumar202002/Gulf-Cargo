@@ -22,12 +22,12 @@ async function request(url) {
 
 /** Existing: track by cargo/awb code */
 export async function fetchTrackingData(code) {
-  const url = `https://developmentapi.gulfcargoksa.com/public/api/track/${encodeURIComponent(code)}`;
+  const url = `https://api.gulfcargoksa.com/public/api/track/${encodeURIComponent(code)}`;
   return request(url);
 }
 
 /** NEW: track by physical bill invoice number (e.g., "INV-2025-3109") */
 export async function fetchTrackingByInvoice(invoiceNo) {
-  const url = `https://developmentapi.gulfcargoksa.com/public/api/tracks/${encodeURIComponent(invoiceNo)}`;
+  const url = `https://api.gulfcargoksa.com/public/api/tracks/${encodeURIComponent(invoiceNo)}`;
   return request(url);
 }
