@@ -5,6 +5,7 @@ import { FaLocationDot } from "react-icons/fa6";
 import { MdPhoneCallback } from "react-icons/md";
 import { IoMailUnreadSharp } from "react-icons/io5";
 import { PiClockCountdownFill } from "react-icons/pi";
+import { FaWhatsapp } from "react-icons/fa";
 import { Button } from '@radix-ui/themes';
 import { motion, Variants, cubicBezier } from "framer-motion";
 import Link from 'next/link';
@@ -66,6 +67,22 @@ function ContactUs() {
                 <span className='contact-icons'><MdPhoneCallback/></span>
                <Link href="tel:+966547619393"><h4 className='contact-lists'>+966 54 761 9393</h4></Link> 
               </motion.div>
+
+            <motion.div
+                className="flex items-center gap-4 py-3"
+                variants={fadeUp}
+                whileHover={{ x: 4 }}
+              >
+                <span className="contact-icons"><FaWhatsapp /></span>
+                <Link
+                  href="https://wa.me/0538330980"
+                  target="_blank"
+                  
+                >
+                  <h4 className="contact-lists">0538330980</h4>
+                </Link>
+              </motion.div>
+
 
               <motion.div className="flex items-center gap-4" variants={fadeUp} whileHover={{ x: 4 }}>
                 <span className='contact-icons'><IoMailUnreadSharp/></span>

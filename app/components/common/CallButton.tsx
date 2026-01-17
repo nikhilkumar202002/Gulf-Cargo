@@ -6,7 +6,7 @@ import "./CommonStyles.css";
 export default function CallButton() {
   const onClick = () => {
     // This will trigger the phone dialer
-    window.location.href = "tel:+966547619393"; 
+    window.location.href = "tel:0538330980"; 
   };
 
   return (
